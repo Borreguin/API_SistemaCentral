@@ -211,7 +211,7 @@ class ComponenteInternal(EmbeddedDocument):
             return True, self.leafs[check[0]] #PRIMER ELEMENTO QUE ENCONTRO --> EN LEAFS
         return False, f"No existe el componente final [{id_leaf}] en el componente interno [{self.name}]"
 
-    # TODO: leaf to internal (Revisar)
+
     def change_leaf_to_internal(self,leaf_id:str, leafs: list):
         success, leaf=self.search_leaf_by_id(leaf_id)
         if success:
