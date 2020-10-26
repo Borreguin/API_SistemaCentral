@@ -30,9 +30,13 @@ config["ROTATING_FILE_HANDLER_LOG_LEVEL"] = {"value": "info", "options": ["error
 # Repositories:
 # if there are need for nested repositories, they should be write as: path\\of\\this\\repository
 config["TEMP_REPO"] = "temp"
+config["LOG_REPO"]="logs"
 # TODO: Redireccionar a una carpeta única
 config["DB_REPO"] = "_db"
 
 config["SUPPORTED_FORMAT_DATES"] = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d", "%Y-%m-%d %H:%M:%S.%f"]
 config["DEFAULT_DATE_FORMAT"] = "%Y-%m-%d %H:%M:%S"
 
+#CALCULOS DISPONIBLES
+config["AVAILABLE_OPERATIONS"]=["LEAF","PARALELO","SERIE","PONDERADO","OTROS"]
+config["AVAILABLE_SOURCES"]=[None,"MANUAL","CÁLCULO","PISERVER","OTROS"]

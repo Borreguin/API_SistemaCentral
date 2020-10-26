@@ -35,8 +35,7 @@ else:
     FLASK_DEBUG = config["FLASK_DEBUG"]
     SECRET_KEY = "Th1$1$a$6creTK6y"
 
-""" JWT CONFIGURATION """
-TOKEN_VALID_TIME = dt.timedelta(**config["TOKEN_VALID_TIME"])
+
 
 """ API CONFIGURATION """
 if config["API_URL_PREFIX"] != "/":
@@ -75,9 +74,14 @@ if not os.path.exists(TEMP_PATH):
 """" REPOSITORIES CONFIGURATION """
 TEMP_REPO = config["TEMP_REPO"]
 DB_REPO = config["DB_REPO"]
+LOG_REPO = config["LOG_REPO"]
+
+"""CONFIGURACIÓN DE LA APLICACIÓN"""
+AVAILABLE_OPERATIONS=config["AVAILABLE_OPERATIONS"]
+AVAILABLE_SOURCES=config["AVAILABLE_SOURCES"]
 
 """ LISTA DE REPOSITORIOS """
-REPOS = [TEMP_REPO, DB_REPO]
+REPOS = [TEMP_REPO, DB_REPO, LOG_REPO]
 FINAL_REPO = list()
 for repo in REPOS:
     this_repo = os.path.join(project_path, repo)
@@ -86,7 +90,7 @@ for repo in REPOS:
     FINAL_REPO.append(this_repo)
 
 # getting the definitive path for each one in same order:
-TEMP_REPO, DB_REPO = FINAL_REPO
+TEMP_REPO, DB_REPO,LOG_REPO = FINAL_REPO
 
 
 # Default Class for Logging messages about this API

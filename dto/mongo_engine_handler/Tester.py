@@ -1,6 +1,8 @@
 import random as r
 from mongoengine import *
 import datetime as dt
+
+from dto.mongo_engine_handler.Components import *
 from settings import initial_settings as init
 DEBUG = True
 
@@ -16,7 +18,17 @@ def test():
     mongo_config.update(dict(db="DB_DISP_EMS"))
     connect(**mongo_config)
 
+    new_component=ComponenteRoot(bloque="ROOT_TEST",nombre="ROOT_1")
+    new_component.save()
+    new_internal_component=ComponenteInternal(name="INTERNAL_TEST_1")
+    new_component.add_internal_component([new_internal_component])
+    new_component.save()
+    # TEST DELETE
+    #new_component.delete_internal("INTERNAL_TEST_1")
+    new_leaf_component=ComponenteLeaf(name="LEAF_TEST_1")
+    new_internal_component.add_leaf_component([new_leaf_component])
 
+    new_component.save()
 
     disconnect()
     return True
