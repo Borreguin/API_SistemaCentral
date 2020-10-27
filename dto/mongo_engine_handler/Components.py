@@ -98,9 +98,6 @@ class ComponenteInternal(EmbeddedDocument):
             lg = [str(internal_component[i]) for i, v in enumerate(check) if not v]
             return False, [f"La siguiente lista de componentes internos no es compatible:"] + lg
 
-        self.delete_leaf(self.name)
-
-
         # unificando las lista y crear una sola
         unique = dict()
         unified_list = self.internals + internal_component
@@ -119,6 +116,7 @@ class ComponenteInternal(EmbeddedDocument):
             lg = [str(leaf_component[i]) for i, v in enumerate(check) if not v]
             return False, [f"La siguiente lista de componentes finales no es compatible:"] + lg
 
+        self.delete_leaf(self.name)
         # unificando las lista y crear una sola
         unique = dict()
         unified_list = self.leafs + leaf_component
@@ -126,8 +124,8 @@ class ComponenteInternal(EmbeddedDocument):
         n_total = len(unified_list)
         for u in unified_list:
             unique.update({u.public_id: u})
-        self.internals = [unique[k] for k in unique.keys()]
-        n_final = len(self.internals)
+        self.leafs = [unique[k] for k in unique.keys()]
+        n_final = len(self.leafs)
         return True, f"Componentes finales: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
 
     def edit_internal_component(self,new_internal:dict):
@@ -213,6 +211,12 @@ class ComponenteInternal(EmbeddedDocument):
 
 
     def change_leaf_to_internal(self,leaf_id:str, leafs: list):
+        # check si todas las leafs son de tipo Componente Leaf
+        check = [isinstance(t, ComponenteLeaf) for t in leafs]
+        if not all(check):
+            lg = [str(leafs[i]) for i, v in enumerate(check) if not v]
+            return False, [f"La siguiente lista de leafs no es compatible:"] + lg
+
         success, leaf=self.search_leaf_by_id(leaf_id)
         if success:
             if len(leafs) < 2:  # Restriccion 2 leafs al menos

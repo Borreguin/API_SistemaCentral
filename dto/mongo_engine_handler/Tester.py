@@ -18,18 +18,21 @@ def test():
     mongo_config.update(dict(db="DB_DISP_EMS"))
     connect(**mongo_config)
 
-    new_component=ComponenteRoot(bloque="ROOT_TEST",nombre="ROOT_1")
+    new_component=ComponenteRoot(bloque="ROOT_TEST",nombre=f"ROOT_{str(r.randint(1,1000))}")
     new_component.save()
     new_internal_component=ComponenteInternal(name="INTERNAL_TEST_1")
     new_component.add_internal_component([new_internal_component])
     new_component.save()
-    # TEST DELETE
-    #new_component.delete_internal("INTERNAL_TEST_1")
     new_leaf_component=ComponenteLeaf(name="LEAF_TEST_1")
-    new_internal_component.add_leaf_component([new_leaf_component])
-
+    success,msg=new_internal_component.add_leaf_component([new_leaf_component])
     new_component.save()
-
+    new_leaf_component_2 = ComponenteLeaf(name="LEAF_TEST_2")
+    new_internal_component.add_leaf_component([new_leaf_component_2])
+    new_component.save()
+    new_leaf_component_3 = ComponenteLeaf(name="LEAF_TEST_3")
+    new_leaf_component_4 = ComponenteLeaf(name="LEAF_TEST_4")
+    new_internal_component.change_leaf_to_internal(new_leaf_component.public_id,[new_leaf_component_3,new_leaf_component_4])
+    new_component.save()
     disconnect()
     return True
 
