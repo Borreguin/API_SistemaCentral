@@ -23,16 +23,34 @@ def test():
     new_internal_component=ComponenteInternal(name="INTERNAL_TEST_1")
     new_component.add_internal_component([new_internal_component])
     new_component.save()
+    new_internal_component_2=ComponenteInternal(name="INTERNAL_TEST_2")
+    new_component.add_internal_component([new_internal_component_2])
+    new_component.save()
+
     new_leaf_component=ComponenteLeaf(name="LEAF_TEST_1")
     success,msg=new_internal_component.add_leaf_component([new_leaf_component])
     new_component.save()
-    new_leaf_component_2 = ComponenteLeaf(name="LEAF_TEST_2")
-    new_internal_component.add_leaf_component([new_leaf_component_2])
+
+    new_internal_component_3 = ComponenteInternal(name="INTERNAL_TEST_3")
+    new_internal_component_2.add_internal_component([new_internal_component_3])
+    new_internal_component_4 = ComponenteInternal(name="INTERNAL_TEST_4")
+    new_internal_component_3.add_internal_component([new_internal_component_4])
     new_component.save()
-    new_leaf_component_3 = ComponenteLeaf(name="LEAF_TEST_3")
-    new_leaf_component_4 = ComponenteLeaf(name="LEAF_TEST_4")
-    new_internal_component.change_leaf_to_internal(new_leaf_component.public_id,[new_leaf_component_3,new_leaf_component_4])
-    new_component.save()
+    id_to_search=new_internal_component_4.public_id
+    success,result=new_component.search_internal_by_id(id_to_search)
+
+    ##----------------TEST CHANGE LEAF TO INTERNAL-----OK--------
+    #new_leaf_component_2 = ComponenteLeaf(name="LEAF_TEST_2")
+    #new_internal_component.add_leaf_component([new_leaf_component_2])
+    #new_component.save()
+    #new_leaf_component_3 = ComponenteLeaf(name="LEAF_TEST_3")
+    #new_leaf_component_4 = ComponenteLeaf(name="LEAF_TEST_4")
+    #new_internal_component.change_leaf_to_internal(new_leaf_component.public_id,[new_leaf_component_3,new_leaf_component_4])
+
+
+    #new_component.change_internal_to_root(new_internal_component_2.public_id,[new_internal_component],"BLOQUE_ROOT")
+   # new_component.change_internal_to_leaf(new_internal_component.public_id)
+    #new_component.save()
     disconnect()
     return True
 
