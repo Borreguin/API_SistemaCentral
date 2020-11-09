@@ -46,14 +46,14 @@ sys.path.append(project_path)
 
 # import the general configuration of this API:
 # Custom import
-from .services.restplus_config import api as api_p
+from api.services.restplus_config import api as api_p
 from settings import initial_settings as init
-from . import app
-from .authentication.auth import add_authentication
+from api import app
+#from api.authentication.auth import add_authentication
 
 """ EndPoints """
 # namespaces: Todos los servicios de esta API
-from api.services.Manage.endpoints.api_Manage_User import ns as namespace_Manage_User
+from api.services.Manage.endpoints.api_Manage_Component import ns as namespace_Manage_User
 
 """ global variables """
 log = init.LogDefaultConfig("app_flask.log").logger

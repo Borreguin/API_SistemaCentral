@@ -12,7 +12,7 @@ import uuid
 from settings import initial_settings as init
 
 class ComponenteLeaf(EmbeddedDocument):
-    public_id = StringField(required=True, unique=True, default=None)
+    public_id = StringField(required=True, default=None)
     name=StringField(required=True)
     sources=StringField(choices=tuple(init.AVAILABLE_SOURCES))
     actualizado = DateTimeField(default=dt.datetime.now())

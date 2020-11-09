@@ -19,11 +19,11 @@ import re
 
 api_log = LogDefaultConfig("api_services.log").logger
 
-api = Api(version='0.1', title='Authentication API',
-          contact="Roberto Sánchez A",
-          contact_email="rg.sanchez.a@gmail.com",
+api = Api(version='0.1', title='API SISTEMA CENTRAL',
+          contact="Roberto Sánchez A, David Panchi, José Enríquez",
+          contact_email="rg.sanchez.a@gmail.com, dpanchi@cenace.org.ec, jenriquez@cenace.org.ec",
           contact_url="https://github.com/Borreguin",
-          description='This API allows JWT Login for users, create groups and roles',
+          description='This API allows to model and to calculate components of central system of EMS',
           ordered=False)
 
 
