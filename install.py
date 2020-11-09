@@ -3,8 +3,7 @@ import traceback
 import os, sys
 project_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(project_path)
-from dto.sqlite_engine_handler import Defaults
-from dto.sqlite_engine_handler import Groups
+
 
 
 def install_requirements():
@@ -20,10 +19,10 @@ def install_requirements():
 
 def prepare_settings():
     print(">>> Prepare settings for this API...")
-    success, msg = Defaults.create_defaults()
-    print(msg)
+#    success, msg = Defaults.create_defaults()
+#    print(msg)
 
 
 if __name__ == "__main__":
-    # install_requirements()
-    prepare_settings()
+     install_requirements()
+ #   prepare_settings()

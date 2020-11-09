@@ -21,13 +21,10 @@ class Serializers:
 
         # añadir los serializadores
         """ serializer for user information """
-        self.user = api.model("User", {
-            "user_name": fields.String(required=True,
-                                      description="Nombre del usuario"),
-            "email": fields.String(required=True, description="Email del usuario"),
-            "password": fields.String(required=True, description="Password del usuario"),
-            "is_blocked": fields.Boolean(required=False, default=False, description="Usuario bloqueado, no se permite "
-                                                                "eliminación/edición")
+        self.rootcomponent = api.model("rootcomponent", {
+            "bloque": fields.String(required=True,
+                                      description="Nombre del bloque al que pertenece el componente"),
+            "nombre": fields.String(required=True, description="nombre del componente")
         })
 
         return api
