@@ -23,15 +23,10 @@ class ComponentAPIByID(Resource):
     def get(self, public_id: str = "Public Id del componente root"):
         """ Obtener el componente root mediante su public_id """
         try:
-            # componenteroot=ComponenteRoot.search_internal_by_id(id_internal=public_id).first() #no hay función en components que permita obtener root por id
-            # if componenteroot is None:
-            #     return dict(success=False, componenteroot=None, msg="No existe el componente root"),404
-            # return dict(success=True, componenteroot=componenteroot.to_dict(), msg=f"{componenteroot} fue encontrado"),200
-            #user = User.query.filter_by(public_id=public_id).first()
-            #if user is None:
-              #  return dict(success=False, user=None, msg="No existe el usuario"), 404
-            #return dict(success=True, user=user.to_dict(), msg=f"{user} fue encontrado"), 200
-            return dict(success=False, msg="Función no implementada todavía")
+            componente  = ComponenteRoot.objects(public_id=public_id).first()
+            if componente is None:
+                return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
+            return dict(success=True, componente=componente.to_dict(),msg=f"{componente} fue encontrado", ), 200
         except Exception as e:
             return default_error_handler(e)
 
@@ -40,27 +35,29 @@ class ComponentAPIByID(Resource):
         """ Edita un componente root de la Base de Datos usando su id público"""
         try:
             edited_component = request.get_json()
-            #user = User.query.filter_by(public_id=public_id).first()
-            #if user is None:
-                #return dict(success=False, msg="No se ha encontrado el usuario"), 404
-            #success, msg = user.update(edited_user)
-            #return dict(success=success, msg=msg), 200 if success else 409
-            return dict(success=False, msg="Función no implementada todavía")
+            componenteroot=ComponenteRoot.objects(public_id=public_id).first()
+            if componenteroot is None:
+                return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
+            componenteroot.bloque=edited_component["bloque"]
+            componenteroot.nombre=edited_component["nombre"]
+            componenteroot.save()
+            return dict(success=True, componenteroot=componenteroot.to_dict(),
+                        msg=f"El componente root {componenteroot} fue editado"), 200
         except Exception as e:
             return default_error_handler(e)
 
     def delete(self, public_id: str = "Public Id del componente"):
-        """ Eliminar un componete root mediante su public_id """
+        """ Eliminar un componente root mediante su public_id """
         try:
-            #user = User.query.filter_by(public_id=public_id).first()
-            #if user is None:
-                #return dict(success=False, msg="El usuario no existe"), 404
-            #success, msg = user.delete()
-            #return dict(success=success, msg=msg), 200 if success else 409
-            return dict(success=False, msg="Función no implementada todavía")
+            componenteroot=ComponenteRoot.objects(public_id=public_id).first()
+            if componenteroot is None:
+                return dict(success=False, msg="El componente root no existe"),404
+            #eliminando componente root por Public id
+            componenteroot.delete()
+            return dict(success=True,
+                        msg=f"El componente root {componenteroot} fue eliminado"), 200
         except Exception as e:
             return default_error_handler(e)
-
 
 @ns.route('s/root')
 class ComponentAPI(Resource):
@@ -68,18 +65,16 @@ class ComponentAPI(Resource):
     def get(self):
         """ Obtiene todos los componentes root existentes  """
         try:
-            # users = User.query.all()
-            # to_send = list()
-            # for user in users:
-            #     to_send.append(user.to_dict())
-            # if len(users) == 0:
-            #     return dict(success=False, users=None, msg="No existen usuarios"), 404
-            # else:
-            #     return dict(success=True, users=to_send, msg=f"[{len(users)}] usuarios")
-            return dict(success=False, msg="Función no implementada todavía")
+            componentesroot=ComponenteRoot.objects()
+            to_send=list()
+            for componenteroot in componentesroot:
+                to_send.append(componenteroot.to_dict())
+            if len(componentesroot) == 0:
+                return dict(success=False, componentesroot=None, msg="No existen componentes root"), 404
+            else:
+                return dict(success=True, componentesroot=to_send,msg=f"[{len(componentesroot)}] componentes root")
         except Exception as e:
             return default_error_handler(e)
-
 
 @ns.route('/root')
 class ComponentAPI(Resource):
