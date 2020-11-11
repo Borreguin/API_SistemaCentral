@@ -8,7 +8,9 @@ from . import default_error_handler
 from . import serializers as srl
 from . import parsers
 from . import log
-from dto.mongo_engine_handler.Components import *
+from dto.mongo_engine_handler.Comp_Internal import *
+from dto.mongo_engine_handler.Comp_Leaf import *
+from dto.mongo_engine_handler.Comp_Root import *
 
 
 # creating this endpoint
