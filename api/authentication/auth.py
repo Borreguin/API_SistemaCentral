@@ -134,7 +134,6 @@ from flask import request
 import jwt
 # import global configurations:
 from settings import initial_settings as init
-from dto.sqlite_engine_handler.Users import User
 
 
 def token_required(f):

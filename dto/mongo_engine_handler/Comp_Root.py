@@ -204,4 +204,5 @@ class ComponenteRoot(Document):
 
 
     def to_dict(self):
-        return dict(bloque=self.bloque,nombre=self.nombre)
+        return dict(bloque=self.bloque,nombre=self.nombre,
+                    internals=[i.to_dict() for i in self.internals])

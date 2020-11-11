@@ -71,3 +71,5 @@ class ComponenteLeaf(EmbeddedDocument):
     def validate_leaf(self):
         return self.source is not None
 
+    def to_dict(self):
+        return dict(name=self.name, source=self.source)

@@ -207,3 +207,6 @@ class ComponenteInternal(EmbeddedDocument):
         else:
             return False, f"No existe padre del componente interno [{id_internal}]"
 
+    def to_dict(self):
+        return dict(name=self.name, internals=[i.to_dict() for i in self.internals],
+                    leafs=[l.to_dict() for l in self.leafs])
