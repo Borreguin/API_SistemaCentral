@@ -64,10 +64,10 @@ class ComponenteLeaf(EmbeddedDocument):
             return False, msg
 
     def __repr__(self):
-        return f"<Internal {self.name},{len(self.internals)}>"
+        return f"<Leaf {self.name}>"
 
     def __str__(self):
-        return f"<Internal {self.name},{len(self.internals)}>"
+        return f"<Leaf {self.name}>"
 
     def validate_leaf(self):
         return self.source is not None
