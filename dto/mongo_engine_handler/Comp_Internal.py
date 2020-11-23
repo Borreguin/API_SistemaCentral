@@ -11,7 +11,7 @@ import datetime as dt
 import uuid
 from settings import initial_settings as init
 #from dto.mongo_engine_handler.Comp_Root import ComponenteRoot
-from dto.mongo_engine_handler.Comp_Leaf import ComponenteLeaf
+from dto.mongo_engine_handler.Comp_Leaf import *
 
 class ComponenteInternal(EmbeddedDocument):
     public_id=StringField(required=True, default=None)
