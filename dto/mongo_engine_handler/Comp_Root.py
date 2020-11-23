@@ -10,8 +10,8 @@ from mongoengine import *
 import datetime as dt
 import uuid
 from settings import initial_settings as init
-from dto.mongo_engine_handler.Comp_Internal import ComponenteInternal
-from dto.mongo_engine_handler.Comp_Leaf import ComponenteLeaf
+from dto.mongo_engine_handler.Comp_Internal import *
+from dto.mongo_engine_handler.Comp_Leaf import *
 
 class ComponenteRoot(Document):
     public_id=StringField(required=True, default=None)
