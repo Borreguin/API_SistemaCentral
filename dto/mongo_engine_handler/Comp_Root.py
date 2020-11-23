@@ -22,7 +22,7 @@ class ComponenteRoot(Document):
     internals = ListField(EmbeddedDocumentField(ComponenteInternal), required=True)
     document = StringField(required=True, default="ComponenteRoot")
     unique=StringField(required=True, unique=True)
-    meta = {"collection": "CONFG|componentes"}
+    meta = {"collection": "CONFG|Componentes"}
 
 
     def __init__(self, *args, **values):
