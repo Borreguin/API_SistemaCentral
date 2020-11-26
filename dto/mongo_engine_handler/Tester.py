@@ -20,7 +20,7 @@ def test():
     mongo_config.update(dict(db="DB_DISP_EMS"))
     connect(**mongo_config)
 
-    new_component=ComponenteRoot(bloque="ROOT_TEST",nombre=f"ROOT_{str(r.randint(1,1000))}")
+    new_component=ComponenteRoot(block="ROOT_TEST",nombre=f"ROOT_{str(r.randint(1,1000))}")
     new_component.save()
     new_internal_component=ComponenteInternal(name="INTERNAL_TEST_1")
     new_component.add_internal_component([new_internal_component])

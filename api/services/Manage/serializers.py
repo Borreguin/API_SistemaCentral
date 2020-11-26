@@ -22,9 +22,14 @@ class Serializers:
         # añadir los serializadores
         """ serializer for user information """
         self.rootcomponent = api.model("rootcomponent", {
-            "bloque": fields.String(required=True,
+            "block": fields.String(required=True,
                                       description="Nombre del bloque al que pertenece el componente"),
-            "nombre": fields.String(required=True, description="nombre del componente")
+            "name": fields.String(required=True, description="nombre del componente")
+        })
+
+        """ serializador para bloque root """
+        self.blockroot = api.model("blockroot", {
+            "name": fields.String(required=True, description="nombre del bloque root")
         })
 
         return api

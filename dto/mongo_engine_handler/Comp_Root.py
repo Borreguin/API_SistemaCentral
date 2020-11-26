@@ -15,14 +15,14 @@ from dto.mongo_engine_handler.Comp_Leaf import *
 
 class ComponenteRoot(Document):
     public_id=StringField(required=True, default=None)
-    bloque = StringField(required=True)
-    nombre = StringField(required=True)
-    tipo_calculo = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
-    actualizado = DateTimeField(default=dt.datetime.now())
+    block = StringField(required=True)
+    name = StringField(required=True)
+    calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
+    updated = DateTimeField(default=dt.datetime.now())
     internals = ListField(EmbeddedDocumentField(ComponenteInternal), required=True)
     document = StringField(required=True, default="ComponenteRoot")
     unique=StringField(required=True, unique=True)
-    meta = {"collection": "CONFG|Componentes"}
+    meta = {"collection": "CONFG|componentes"}
 
 
     def __init__(self, *args, **values):
@@ -32,12 +32,12 @@ class ComponenteRoot(Document):
             #id = str(uuid.uuid4())
             self.public_id = str(uuid.uuid4())
         if len(self.internals)==0:
-           new_component_internal=ComponenteInternal(name=self.nombre,internals=[],leafs=[],tipo_calculo="LEAF")
+           new_component_internal=ComponenteInternal(name=self.name, internals=[], leafs=[], calculation_type="LEAF")
            self.internals=[new_component_internal]
-        if self.tipo_calculo is None:
-            self.tipo_calculo=init.AVAILABLE_OPERATIONS[0]
+        if self.calculation_type is None:
+            self.calculation_type=init.AVAILABLE_OPERATIONS[0]
         if self.unique is None:
-            self.unique=str(self.bloque).lower()+"_"+str(self.nombre).lower()
+            self.unique= str(self.block).lower() + "_" + str(self.name).lower()
 
     def add_internal_component(self,internal_component:list):
         # check si todas los internal_component son de tipo ComponenteInternal
@@ -54,7 +54,7 @@ class ComponenteRoot(Document):
             unique.update({u.public_id: u})
         self.internals = [unique[k] for k in unique.keys()]
         n_final = len(self.internals)
-        self.delete_internal(self.nombre)
+        self.delete_internal(self.name)
         return True, f"Componentes internos: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
 
     # TODO: Root to internal (Eliminar- Funcion de bloque)
@@ -64,11 +64,11 @@ class ComponenteRoot(Document):
     def edit_root_component(self,new_root:dict):
         try:
 
-            to_update = ["bloque", "nombre", "tipo_calculo"]
+            to_update = ["bloque", "nombre", "calculation_type"]
             for key, value in new_root.items():
                 if key in to_update:
                     setattr(self, key, value)
-            self.actualizado=dt.datetime.now()
+            self.updated=dt.datetime.now()
 
             return True,f"Root editado"
 
@@ -80,30 +80,30 @@ class ComponenteRoot(Document):
             return False, msg
 
     def __repr__(self):
-        return f"<Root {self.bloque},{self.nombre},{len(self.internals)}>"
+        return f"<Root {self.block},{self.name},{len(self.internals)}>"
 
     def __str__(self):
-        return f"<Root {self.bloque},{self.nombre},{len(self.internals)}>"
+        return f"<Root {self.block},{self.name},{len(self.internals)}>"
 
     #FUNCIONES DELETE
 
     def delete_internal(self, name_delete:str):
         new_internals = [e for e in self.internals if name_delete != e.name]
         if len(new_internals) == len(self.internals):
-            return False, f"No existe el componente interno [{name_delete}] en el componente root [{self.nombre}]"
+            return False, f"No existe el componente interno [{name_delete}] en el componente root [{self.name}]"
         self.internals = new_internals
         if len(self.internals) == 0:
-            new_component_internal = ComponenteInternal(name=self.nombre, internals=[], leafs=[], tipo_calculo="LEAF")
+            new_component_internal = ComponenteInternal(name=self.name, internals=[], leafs=[], calculation_type="LEAF")
             self.internals = [new_component_internal]
         return True, "Componente interno eliminado"
 
     def delete_internal_by_id(self, id_internal:str):
         new_internals = [e for e in self.internals if id_internal != e.public_id]
         if len(new_internals) == len(self.internals):
-            return False, f"No existe el componente interno [{id_internal}] en el componente root [{self.nombre}]"
+            return False, f"No existe el componente interno [{id_internal}] en el componente root [{self.name}]"
         self.internals = new_internals
         if len(self.internals) == 0:
-            new_component_internal = ComponenteInternal(name=self.nombre, internals=[], leafs=[], tipo_calculo="LEAF")
+            new_component_internal = ComponenteInternal(name=self.name, internals=[], leafs=[], calculation_type="LEAF")
             self.internals = [new_component_internal]
         return True, "Componente interno eliminado"
 
@@ -126,7 +126,7 @@ class ComponenteRoot(Document):
                 if success:
                     return success, result
         else:
-            return False, f"No existe el componente interno [{internal_nombre}] en el root [{self.nombre}]"
+            return False, f"No existe el componente interno [{internal_nombre}] en el root [{self.name}]"
 
     def search_internal_by_id(self, id_internal: str):
         check = [i for i, e in enumerate(self.internals) if id_internal == e.public_id]
@@ -138,8 +138,9 @@ class ComponenteRoot(Document):
                 #print(self.nombre,internal.name,success,result)
                 if success:
                     return success,result
+            return False, f"No existe el componente interno [{id_internal}] en el root [{self.name}]"
         else:
-            return False, f"No existe el componente interno [{id_internal}] en el root [{self.nombre}]"
+            return False, f"No existe el componente interno [{id_internal}] en el root [{self.name}]"
 
     #CHANGE INTERNAL TO LEAF
 
@@ -204,5 +205,5 @@ class ComponenteRoot(Document):
 
 
     def to_dict(self):
-        return dict(bloque=self.bloque,nombre=self.nombre,
+        return dict(bloque=self.block, nombre=self.name,
                     internals=[i.to_dict() for i in self.internals])
