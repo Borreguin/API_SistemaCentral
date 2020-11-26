@@ -22,7 +22,7 @@ def test():
     mongo_config.update(dict(db="DB_DISP_EMS"))
     connect(**mongo_config)
 
-    new_block=BloqueRoot(nombre=f"BLOQUE_ROOT_{str(r.randint(1,1000))}")
+    new_block=BloqueRoot(name=f"BLOQUE_ROOT_{str(r.randint(1,1000))}")
     new_block.save()
 
     new_block_leaf=BloqueLeaf(name="BLOQUE_LEAF_TEST_1")

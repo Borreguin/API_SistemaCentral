@@ -18,8 +18,8 @@ class ComponenteInternal(EmbeddedDocument):
     name=StringField(required=True)
     internals=EmbeddedDocumentListField('ComponenteInternal')
     leafs=ListField(EmbeddedDocumentField(ComponenteLeaf), required=True)
-    tipo_calculo = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
-    actualizado = DateTimeField(default=dt.datetime.now())
+    calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
+    updated = DateTimeField(default=dt.datetime.now())
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
@@ -29,8 +29,8 @@ class ComponenteInternal(EmbeddedDocument):
         if len(self.leafs) ==0:
             new_leaf=ComponenteLeaf(name=self.name)
             self.leafs=[new_leaf]
-        if self.tipo_calculo is None:
-            self.tipo_calculo = init.AVAILABLE_OPERATIONS[0]
+        if self.calculation_type is None:
+            self.calculation_type = init.AVAILABLE_OPERATIONS[0]
     def check_loop(self):
         pass
     def change_internal_to_leaf(self):
@@ -76,11 +76,11 @@ class ComponenteInternal(EmbeddedDocument):
     def edit_internal_component(self,new_internal:dict):
         try:
 
-            to_update = ["nombre", "tipo_calculo"]
+            to_update = ["nombre", "calculation_type"]
             for key, value in new_internal.items():
                 if key in to_update:
                     setattr(self, key, value)
-            self.actualizado=dt.datetime.now()
+            self.updated=dt.datetime.now()
 
             return True,f"Componente interno editado"
 

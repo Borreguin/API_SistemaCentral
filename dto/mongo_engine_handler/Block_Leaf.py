@@ -15,17 +15,17 @@ from dto.mongo_engine_handler.Comp_Root import *
 
 class BloqueLeaf(EmbeddedDocument):
     public_id = StringField(required=True, default=None)
-    name=StringField(required=True)
+    name = StringField(required=True)
     #root_id=ListField(required=True, default=None) #Lista de componentes root que conforman el bloque leaf
-    tipo_calculo = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
-    actualizado = DateTimeField(default=dt.datetime.now())
+    calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
+    updated = DateTimeField(default=dt.datetime.now())
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
         if self.public_id is None:
             self.public_id = str(uuid.uuid4())
-        if self.tipo_calculo is None:
-            self.tipo_calculo=init.AVAILABLE_OPERATIONS[0]
+        if self.calculation_type is None:
+            self.calculation_type=init.AVAILABLE_OPERATIONS[0]
 
 
     # TODO: VALIDAR SI SE REQUIERE FUNCION PARA ADICIONAR COMPONENTES ROOT AL BLOQUE LEAF
@@ -49,17 +49,13 @@ class BloqueLeaf(EmbeddedDocument):
 
     def edit_leaf_block(self,new_leaf_block:dict):
         try:
-
-            to_update = ["name", "tipo_calculo"]
+            to_update = ["name", "calculation_type"]
             for key, value in new_leaf_block.items():
                 if key in to_update:
                     setattr(self, key, value)
-            self.actualizado=dt.datetime.now()
-
-            return True,f"Bloque leaf editado"
-
+            self.updated=dt.datetime.now()
+            return True, f"Bloque leaf editado"
         except Exception as e:
-
             msg = f"Error al actualizar {self}​​: {str(e)}​​"
             tb = traceback.format_exc() #Registra últimos pasos antes del error
             log.error(f"{msg}​​ \n {tb}​​")
@@ -72,7 +68,7 @@ class BloqueLeaf(EmbeddedDocument):
         return f"<Bloque Leaf {self.name},{self.root_id}>"
 
     def validate_bloque_leaf(self):
-        return self.tipo_calculo is not None
+        return self.calculation_type is not None
 
     def to_dict(self):
-        return dict(name=self.name, tipo_calculo=self.tipo_calculo)
+        return dict(name=self.name, calculation_type=self.calculation_type)

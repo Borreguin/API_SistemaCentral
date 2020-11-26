@@ -53,7 +53,11 @@ from api import app
 
 """ EndPoints """
 # namespaces: Todos los servicios de esta API
-from api.services.Manage.endpoints.api_Manage_Component import ns as namespace_Manage_User
+from api.services.Manage.endpoints.api_Manage_Comp_Root import ns as namespace_Comp_Root
+from api.services.Manage.endpoints.api_Manage_Comp_Internal import ns as namespace_Comp_Internal
+from api.services.Manage.endpoints.api_Manage_Comp_Leaf import ns as namespace_Comp_Leaf
+from api.services.Manage.endpoints.api_Manage_Block_Leaf import ns as namespace_Block_Leaf
+from api.services.Manage.endpoints.api_Manage_Block_Root import ns as namespace_Block_Root
 
 """ global variables """
 log = init.LogDefaultConfig("app_flask.log").logger
@@ -69,7 +73,11 @@ def adding_end_points(blueprint, app):
 
     # adding Endpoints to this API
     # añadiendo los servicios de la API (EndPoints)
-    api_p.add_namespace(namespace_Manage_User)
+    api_p.add_namespace(namespace_Comp_Root)
+    api_p.add_namespace(namespace_Comp_Leaf)
+    api_p.add_namespace(namespace_Comp_Internal)
+    api_p.add_namespace(namespace_Block_Leaf)
+    api_p.add_namespace(namespace_Block_Root)
 
     # registrando las rutas:
     app.register_blueprint(blueprint)

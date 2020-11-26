@@ -16,7 +16,7 @@ class ComponenteLeaf(EmbeddedDocument):
     public_id = StringField(required=True, default=None)
     name=StringField(required=True)
     source=StringField(choices=tuple(init.AVAILABLE_SOURCES))
-    actualizado = DateTimeField(default=dt.datetime.now())
+    updated = DateTimeField(default=dt.datetime.now())
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
@@ -48,11 +48,11 @@ class ComponenteLeaf(EmbeddedDocument):
     def edit_leaf_component(self,new_internal:dict):
         try:
 
-            to_update = ["nombre", "tipo_calculo"]
+            to_update = ["nombre", "calculation_type"]
             for key, value in new_internal.items():
                 if key in to_update:
                     setattr(self, key, value)
-            self.actualizado=dt.datetime.now()
+            self.updated=dt.datetime.now()
 
             return True,f"Componente interno editado"
 

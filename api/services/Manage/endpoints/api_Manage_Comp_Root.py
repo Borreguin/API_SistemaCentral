@@ -14,12 +14,12 @@ from dto.mongo_engine_handler.Comp_Root import *
 
 
 # creating this endpoint
-ns = api.namespace('component', description='Administración de componentes')
+ns = api.namespace('component-root', description='Administración de componentes Root')
 ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
 
-@ns.route('/root/<string:public_id>')
+@ns.route('/<string:public_id>')
 class ComponentAPIByID(Resource):
 
     def get(self, public_id: str = "Public Id del componente root"):
@@ -40,8 +40,8 @@ class ComponentAPIByID(Resource):
             componenteroot=ComponenteRoot.objects(public_id=public_id).first()
             if componenteroot is None:
                 return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
-            componenteroot.bloque=edited_component["bloque"]
-            componenteroot.nombre=edited_component["nombre"]
+            componenteroot.block=edited_component["block"]
+            componenteroot.name=edited_component["name"]
             componenteroot.save()
             return dict(success=True, componenteroot=componenteroot.to_dict(),
                         msg=f"El componente root {componenteroot} fue editado"), 200
@@ -61,7 +61,7 @@ class ComponentAPIByID(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('s/root')
+@ns.route('s')
 class ComponentAPI(Resource):
 
     def get(self):
@@ -78,7 +78,7 @@ class ComponentAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/root')
+@ns.route('')
 class ComponentAPI(Resource):
     @api.expect(ser_from.rootcomponent)
     def post(self):
@@ -86,7 +86,7 @@ class ComponentAPI(Resource):
         try:
             data = request.get_json()
             componenteroot = ComponenteRoot(**data)
-            componenterootdb=ComponenteRoot.objects(bloque=data['bloque'], nombre=data['nombre']).first()
+            componenterootdb=ComponenteRoot.objects(block=data['block'], name=data['name']).first()
             if not componenterootdb is None:
                 return dict(success=False,msg='Este componente root ya existe'),409
             componenteroot.save()
