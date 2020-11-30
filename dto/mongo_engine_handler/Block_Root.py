@@ -16,8 +16,8 @@ from dto.mongo_engine_handler.Comp_Internal import ComponenteInternal
 from dto.mongo_engine_handler.Comp_Leaf import ComponenteLeaf
 
 class BloqueRoot(Document):
-    public_id=StringField(required=True, default=None)
-    name = StringField(required=True)
+    public_id = StringField(required=True, default=None)
+    name = StringField(required=True, unique=True)
     calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
     updated = DateTimeField(default=dt.datetime.now())
     block_leafs = ListField(EmbeddedDocumentField(BloqueLeaf), required=True)

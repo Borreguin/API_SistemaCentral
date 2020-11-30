@@ -40,18 +40,18 @@ class ComponentAPI(Resource):
 
 
 @ns.route('/<string:block_public_id>')
-class ComponentAPI(Resource):
+class BlockAPI(Resource):
     @api.expect(ser_from.blockroot)
     def post(self, block_public_id: str = "Public Id del bloque root"):
         """ Crea un nuevo bloque root """
         try:
             data = request.get_json()
             blockroot = BloqueRoot(public_id=block_public_id, name=data['name'])
-            blockrootdb = BloqueRoot.objects(public_id=block_public_id, name=data['name']).first()
+            blockrootdb = BloqueRoot.objects(public_id=block_public_id).first()
             if not blockrootdb is None:
                 return dict(success=False, bloque_root=None, msg='Este bloque root ya existe'), 409
             blockroot.save()
-            return dict(success=True, bloque_root=blockrootdb.to_json(),
+            return dict(success=True, bloque_root=blockroot.to_dict(),
                         msg="El bloque root fue ingresado en la base de datos")
         except Exception as e:
             return default_error_handler(e)
