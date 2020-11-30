@@ -27,7 +27,6 @@ class ComponentAPIByID(Resource):
         """ Obtener el componente internal mediante root_public_id e internal_public_id """
         try:
             componente_root = ComponenteRoot.objects(public_id=root_public_id).first()
-#           componente_root = ComponenteRoot()
             if componente_root is None:
                 return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
             Success,result = componente_root.search_internal_by_id(internal_public_id)
@@ -72,29 +71,57 @@ class ComponentAPI(Resource):
     def get(self):
         """ Obtiene todos los componentes root existentes  """
         try:
-            componentesroot=ComponenteRoot.objects()
-            to_send=list()
+            componentesroot = ComponenteRoot.objects()
+            to_send = list()
             for componenteroot in componentesroot:
                 to_send.append(componenteroot.to_dict())
             if len(componentesroot) == 0:
                 return dict(success=False, componentesroot=None, msg="No existen componentes root"), 404
             else:
-                return dict(success=True, componentesroot=to_send,msg=f"[{len(componentesroot)}] componentes root")
+                return dict(success=True, componentesroot=to_send, msg=f"[{len(componentesroot)}] componentes root")
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/root')
-class ComponentAPI(Resource):
-    @api.expect(ser_from.rootcomponent)
-    def post(self):
-        """ Crea un nuevo componente root """
+
+@ns.route('/<id_root>')
+class ComponentInternalInRootAPI(Resource):
+    @api.expect(ser_from.internalcomponent)
+    def post(self, id_root="Id del root"):
+        """ Crea un nuevo componente internal dentro de un root """
         try:
             data = request.get_json()
-            componenteroot = ComponenteRoot(**data)
-            componenterootdb=ComponenteRoot.objects(block=data['block'], name=data['name']).first()
-            if not componenterootdb is None:
-                return dict(success=False,msg='Este componente root ya existe'),409
-            componenteroot.save()
-            return dict(success=True, msg="El componente root fue ingresado en la base de datos")
+            componente_internal = ComponenteInternal(**data)
+            componenterootdb = ComponenteRoot.objects(public_id=id_root).first()
+            if componenterootdb is None:
+                return dict(success=False, component_root=None,
+                            msg=f'El componente root asociado a {id_root} no existe'), 409
+            componenterootdb.add_internal_component([componente_internal])
+            componenterootdb.save()
+            return dict(success=True, component_root=componenterootdb.to_dict(),
+                        msg="El componente internal fue ingresado en la base de datos")
+        except Exception as e:
+            return default_error_handler(e)
+
+
+@ns.route('/<id_root>/<id_internal>')
+class ComponentInternalInInternalAPI(Resource):
+    @api.expect(ser_from.internalcomponent)
+    def post(self, id_root="Id del root", id_internal="Id del internal"):
+        """ Crea un nuevo componente internal dentro de un internal """
+        try:
+            data = request.get_json()
+            componenteinternal = ComponenteInternal(**data)
+            componenterootdb = ComponenteRoot.objects(public_id=id_root).first()
+            if componenterootdb is None:
+                return dict(success=False, component_root=None,
+                            msg=f'No existe el componente root asociado a {id_root}'), 404
+            success, result = componenterootdb.search_internal_by_id(id_internal)
+            if not success:
+                return dict(success=False, component_root=None,
+                            msg=f'No existe el componente internal asociado a {id_internal}'), 404
+            result.add_internal_component([componenteinternal])
+            componenterootdb.save()
+            return dict(success=True, component_root=componenterootdb.to_dict(),
+                        msg="El componente root fue ingresado en la base de datos")
         except Exception as e:
             return default_error_handler(e)

@@ -86,10 +86,11 @@ class ComponentAPI(Resource):
         try:
             data = request.get_json()
             componenteroot = ComponenteRoot(**data)
-            componenterootdb=ComponenteRoot.objects(block=data['block'], name=data['name']).first()
+            componenterootdb = ComponenteRoot.objects(block=data['block'], name=data['name']).first()
             if not componenterootdb is None:
-                return dict(success=False,msg='Este componente root ya existe'),409
+                return dict(success=False, msg='Este componente root ya existe'), 409
             componenteroot.save()
-            return dict(success=True, msg="El componente root fue ingresado en la base de datos")
+            return dict(success=True, component=componenteroot.to_dict(),
+                        msg="El componente root fue ingresado en la base de datos")
         except Exception as e:
             return default_error_handler(e)

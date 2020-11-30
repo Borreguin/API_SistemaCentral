@@ -21,58 +21,7 @@ ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
 
-@ns.route('/block/<string:block_public_id>/leaf/<string:leaf_public_id>')
-class ComponentAPIByID(Resource):
-
-    def get(self, block_public_id: str = "Public Id del bloque root",
-            leaf_public_id: str="Public Id del bloque leaf"):
-        """ Obtener el bloque leaf mediante su public_id y public_id del bloque root"""
-        try:
-            bloque_root = BloqueRoot.objects(public_id=block_public_id).first()
-            #bloque_root = BloqueRoot()
-            if bloque_root is None:
-                return dict(success=False, msg="No existen bloques root asociados a este Public Id"), 404
-            Success,result = bloque_root.search_leaf_by_id(leaf_public_id)
-            if not Success:
-                return dict(success=False, msg="No existen bloques leaf asociados a este Public Id"), 404
-            return dict(success=True, bloqueleaf=result.to_dict(), msg=f"{result.name} fue encontrado"), 200
-        except Exception as e:
-            return default_error_handler(e)
-
-    @api.expect(ser_from.blockroot)
-    def put(self, block_public_id: str = "Public Id del bloque root",
-            leaf_public_id: str = "Public Id del bloque leaf"):
-        """ Edita un bloque leaf de la Base de Datos usando su id público y block_public_id"""
-        try:
-            edited_block = request.get_json()
-            bloque_root = BloqueRoot.objects(public_id=block_public_id).first()
-            if bloque_root is None:
-                return dict(success=False, block=None, msg="No existen bloques root asociados a este Public Id"), 404
-            success, edited, mensaje = bloque_root.edit_leaf_by_id(leaf_public_id,edited_block)
-            if not success:
-                return dict(success=False, block=None, msg=mensaje), 409
-            bloque_root.save()
-            return dict(success=True, block=edited.to_dict(), msg=mensaje), 200
-        except Exception as e:
-            return default_error_handler(e)
-
-    def delete(self, block_public_id: str = "Public Id del bloque root",
-               leaf_public_id: str = "Public Id del bloque leaf"):
-        """ Eliminar bloque leaf mediante su public_id y public_id del bloque root"""
-        try:
-            bloque_root = BloqueRoot.objects(public_id=block_public_id).first()
-            if bloque_root is None:
-                return dict(success=False, msg="El bloque root no existe"), 404
-            success, mensaje = bloque_root.delete_leaf_by_id(leaf_public_id) #si bloque leaf no existe igual sale como que lo eliminó
-            if success:
-                bloque_root.save()
-                return dict(success=True,msg=f'{mensaje}'), 200
-            return dict(success=False, msg=f'{mensaje}')
-        except Exception as e:
-            return default_error_handler(e)
-
-
-@ns.route('s/root')
+@ns.route('s')
 class ComponentAPI(Resource):
 
     def get(self):
@@ -90,7 +39,7 @@ class ComponentAPI(Resource):
             return default_error_handler(e)
 
 
-@ns.route('/block/<string:block_public_id>')
+@ns.route('/<string:block_public_id>')
 class ComponentAPI(Resource):
     @api.expect(ser_from.blockroot)
     def post(self, block_public_id: str = "Public Id del bloque root"):
@@ -100,27 +49,52 @@ class ComponentAPI(Resource):
             blockroot = BloqueRoot(public_id=block_public_id, name=data['name'])
             blockrootdb = BloqueRoot.objects(public_id=block_public_id, name=data['name']).first()
             if not blockrootdb is None:
-                return dict(success=False, msg='Este bloque root ya existe'), 409
+                return dict(success=False, bloque_root=None, msg='Este bloque root ya existe'), 409
             blockroot.save()
-            return dict(success=True, msg="El bloque root fue ingresado en la base de datos")
+            return dict(success=True, bloque_root=blockrootdb.to_json(),
+                        msg="El bloque root fue ingresado en la base de datos")
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/block/<string:block_public_id>/leaf')
-class Block_leafAPI(Resource):
-    @api.expect(ser_from.blockroot)
-    def post(self, block_public_id: str = "Public Id del bloque root"):
-        """ Crea un nuevo bloque leaf usando public_id del bloque root """
+    def delete(self, public_id: str = "Public Id del componente"):
+        """ Eliminar un bloque root mediante su public_id """
         try:
-            data = request.get_json()
-            bloqueleaf = BloqueLeaf(name=data['name'])
-            bloqueroot_db = BloqueRoot.objects(public_id=block_public_id).first()
-            if bloqueroot_db is None:
-                return dict(success=False, bloqueroot=None ,msg="No existen bloques root asociados a este Public Id"), 404
-            success, mensaje = bloqueroot_db.add_leaf_block([bloqueleaf])
-            if success:
-                bloqueroot_db.save()
-                return dict(success=True, msg=f"El bloque leaf {data['name']} fue ingresado en la base de datos")
-            return dict(success=False, msg="El bloque leaf no fue ingresado en la base de datos")
+            bloqueroot = BloqueRoot.objects(public_id=public_id).first()
+            if bloqueroot is None:
+                return dict(success=False, msg="El componente root no existe"), 404
+            # eliminando componente root por Public id
+            bloqueroot.delete()
+            return dict(success=True,
+                        msg=f"El componente root {bloqueroot} fue eliminado"), 200
+        except Exception as e:
+            return default_error_handler(e)
+
+
+@ns.route('/<string:public_id>')
+class BlockAPIByID(Resource):
+
+    def get(self, public_id: str = "Public Id del bloque root"):
+        """ Obtener el bloque root mediante su public_id """
+        try:
+            block_root = ComponenteRoot.objects(public_id=public_id).first()
+            if block_root is None:
+                return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
+            return dict(success=True, bloqueroot=block_root.to_dict(), msg=f"{block_root} fue encontrado", ), 200
+        except Exception as e:
+            return default_error_handler(e)
+
+    @api.expect(ser_from.rootcomponent)
+    def put(self, public_id: str = "Public Id del componente root"):
+        """ Edita un componente root de la Base de Datos usando su id público"""
+        try:
+            edited_component = request.get_json()
+            componenteroot = ComponenteRoot.objects(public_id=public_id).first()
+            if componenteroot is None:
+                return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
+            componenteroot.block = edited_component["block"]
+            componenteroot.name = edited_component["name"]
+            componenteroot.save()
+            return dict(success=True, bloqueroot=componenteroot.to_dict(),
+                        msg=f"El componente root {componenteroot} fue editado"), 200
         except Exception as e:
             return default_error_handler(e)

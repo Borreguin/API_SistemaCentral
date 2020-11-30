@@ -16,8 +16,8 @@ from dto.mongo_engine_handler.Comp_Root import *
 class BloqueLeaf(EmbeddedDocument):
     public_id = StringField(required=True, default=None)
     name = StringField(required=True)
-    #root_id=ListField(required=True, default=None) #Lista de componentes root que conforman el bloque leaf
     calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
+    position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
     updated = DateTimeField(default=dt.datetime.now())
 
     def __init__(self, *args, **values):
@@ -26,7 +26,6 @@ class BloqueLeaf(EmbeddedDocument):
             self.public_id = str(uuid.uuid4())
         if self.calculation_type is None:
             self.calculation_type=init.AVAILABLE_OPERATIONS[0]
-
 
     # TODO: VALIDAR SI SE REQUIERE FUNCION PARA ADICIONAR COMPONENTES ROOT AL BLOQUE LEAF
     def add_root_component(self,root_component:list):
@@ -53,13 +52,16 @@ class BloqueLeaf(EmbeddedDocument):
             for key, value in new_leaf_block.items():
                 if key in to_update:
                     setattr(self, key, value)
-            self.updated=dt.datetime.now()
+            self.updated = dt.datetime.now()
             return True, f"Bloque leaf editado"
         except Exception as e:
             msg = f"Error al actualizar {self}​​: {str(e)}​​"
-            tb = traceback.format_exc() #Registra últimos pasos antes del error
+            tb = traceback.format_exc()  # Registra últimos pasos antes del error
             log.error(f"{msg}​​ \n {tb}​​")
             return False, msg
+
+    def update_position_x_y(self, pos_x: float, pos_y: float):
+        self.position_x_y = [pos_x, pos_y]
 
     def __repr__(self):
         return f"<Bloque Leaf {self.name},{self.root_id}>"
@@ -71,4 +73,4 @@ class BloqueLeaf(EmbeddedDocument):
         return self.calculation_type is not None
 
     def to_dict(self):
-        return dict(name=self.name, calculation_type=self.calculation_type)
+        return dict(name=self.name, calculation_type=self.calculation_type, position_x_y=self.position_x_y)
