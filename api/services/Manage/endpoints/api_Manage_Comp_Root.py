@@ -34,7 +34,7 @@ class ComponentAPIByID(Resource):
 
     @api.expect(ser_from.rootcomponent)
     def put(self, public_id: str = "Public Id del componente root"):
-        """ Edita un componente root de la Base de Datos usando su id público"""
+        """ Edita un componente root de la Base de Datos usando su public_id"""
         try:
             edited_component = request.get_json()
             componenteroot=ComponenteRoot.objects(public_id=public_id).first()

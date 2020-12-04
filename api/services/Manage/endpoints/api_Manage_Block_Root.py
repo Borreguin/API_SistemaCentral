@@ -20,25 +20,6 @@ ns = api.namespace('block-root', description='Administración de bloque root')
 ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
-
-@ns.route('s')
-class ComponentAPI(Resource):
-
-    def get(self):
-        """ Obtiene todos los componentes root existentes  """
-        try:
-            componentesroot = ComponenteRoot.objects()
-            to_send = list()
-            for componenteroot in componentesroot:
-                to_send.append(componenteroot.to_dict())
-            if len(componentesroot) == 0:
-                return dict(success=False, componentesroot=None, msg="No existen componentes root"), 404
-            else:
-                return dict(success=True, componentesroot=to_send, msg=f"[{len(componentesroot)}] componentes root")
-        except Exception as e:
-            return default_error_handler(e)
-
-
 @ns.route('/<string:block_public_id>')
 class BlockAPI(Resource):
     @api.expect(ser_from.blockroot)
@@ -56,22 +37,10 @@ class BlockAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-    def delete(self, public_id: str = "Public Id del componente"):
-        """ Eliminar un bloque root mediante su public_id """
-        try:
-            bloqueroot = BloqueRoot.objects(public_id=public_id).first()
-            if bloqueroot is None:
-                return dict(success=False, msg="El componente root no existe"), 404
-            # eliminando componente root por Public id
-            bloqueroot.delete()
-            return dict(success=True,
-                        msg=f"El componente root {bloqueroot} fue eliminado"), 200
-        except Exception as e:
-            return default_error_handler(e)
 
 
-@ns.route('/<string:public_id>')
-class BlockAPIByID(Resource):
+
+# JE_cambios
 
     def get(self, public_id: str = "Public Id del bloque root"):
         """ Obtener el bloque root mediante su public_id """
@@ -83,18 +52,5 @@ class BlockAPIByID(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-    @api.expect(ser_from.rootcomponent)
-    def put(self, public_id: str = "Public Id del componente root"):
-        """ Edita un componente root de la Base de Datos usando su id público"""
-        try:
-            edited_component = request.get_json()
-            componenteroot = ComponenteRoot.objects(public_id=public_id).first()
-            if componenteroot is None:
-                return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
-            componenteroot.block = edited_component["block"]
-            componenteroot.name = edited_component["name"]
-            componenteroot.save()
-            return dict(success=True, bloqueroot=componenteroot.to_dict(),
-                        msg=f"El componente root {componenteroot} fue editado"), 200
-        except Exception as e:
-            return default_error_handler(e)
+
+
