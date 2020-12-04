@@ -60,7 +60,7 @@ class BlocLeafByID(Resource):
     @api.expect(ser_from.blockroot)
     def put(self, block_public_id: str = "Public Id del bloque root",
             leaf_public_id: str = "Public Id del bloque leaf"):
-        """ Edita un bloque leaf de la Base de Datos usando su id público y block_public_id"""
+        """ Edita un bloque leaf de la Base de Datos usando su public_id y public_id del bloque root"""
         try:
             edited_block = request.get_json()
             bloque_root = BloqueRoot.objects(public_id=block_public_id).first()
