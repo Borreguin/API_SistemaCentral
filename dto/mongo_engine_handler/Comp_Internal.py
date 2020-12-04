@@ -165,7 +165,15 @@ class ComponenteInternal(EmbeddedDocument):
         check = [i for i, e in enumerate(self.leafs) if leaf_nombre == e.name]
         if len(check) > 0:
             return True, self.leafs[check[0]]
-        return False, f"No existe el componente final [{leaf_nombre}] en el componente interno [{self.name}]"
+        #Busqueda en siguientes niveles:
+        elif len(self.internals)>0:
+            for internal in self. internals:
+                success,result=internal.search_leaf(leaf_nombre)
+                if success:
+                    return True, result
+            return False,f"No existe el componente hoja con el nombre [{leaf_nombre}]"
+
+        return False, f"No existe el componente [{leaf_nombre}] en el componente interno [{self.name}]"
 
     def search_leaf_by_id(self, id_leaf: str):
         # OPERACIÓN DE BUSQUEDA USANDO EL ATRIBUTO PUBLIC_ID
@@ -224,3 +232,6 @@ class ComponenteInternal(EmbeddedDocument):
     def to_dict(self):
         return dict(public_id=self.public_id, name=self.name, internals=[i.to_dict() for i in self.internals],
                     leafs=[l.to_dict() for l in self.leafs], position_x_y=self.position_x_y)
+
+    def update_position_x_y(self, pos_x: float, pos_y: float):
+        self.position_x_y = [pos_x, pos_y]

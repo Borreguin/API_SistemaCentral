@@ -19,6 +19,8 @@ class BloqueLeaf(EmbeddedDocument):
     calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
     updated = DateTimeField(default=dt.datetime.now())
+    #PRUEBA REFERENCIAR A COMPONENTE ROOT
+    #comp_root=ReferenceField(ComponenteRoot)
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
