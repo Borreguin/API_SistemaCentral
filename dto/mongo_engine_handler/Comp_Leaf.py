@@ -26,25 +26,6 @@ class ComponenteLeaf(EmbeddedDocument):
         if self.source is None:
             self.source = init.AVAILABLE_SOURCES[0]
 
-    # TODO: NO EXISTE ESTA FUNCION, NO EXISTEN CASOS QUE SE ADICIONEN LEAFS A LEAF
-    # TODO: Eliminar esta función si fuera necesario
-    # def add_leaf_component(self,leaf_component:list):
-    #     # check si todas los internal_component son de tipo ComponenteInternal
-    #     check = [isinstance(t, ComponenteLeaf) for t in leaf_component]
-    #     if not all(check):
-    #         lg = [str(leaf_component[i]) for i, v in enumerate(check) if not v]
-    #         return False, [f"La siguiente lista de componentes finales no es compatible:"] + lg
-    #
-    #     # unificando las lista y crear una sola
-    #     unique = dict()
-    #     unified_list = self.leafs + leaf_component
-    #     n_initial = len(self.leafs)
-    #     n_total = len(unified_list)
-    #     for u in unified_list:
-    #         unique.update({u.public_id: u})
-    #     self.internals = [unique[k] for k in unique.keys()]
-    #     n_final = len(self.internals)
-    #     return True, f"Componentes finales: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
 
     def edit_leaf_component(self, new_internal: dict):
         try:

@@ -25,23 +25,23 @@ def test():
     new_block=BloqueRoot(name=f"BLOQUE_ROOT_{str(r.randint(1,1000))}")
     new_block.save()
 
-    new_block_leaf=BloqueLeaf(name="BLOQUE_LEAF_TEST_1")
+    new_block_leaf=BloqueLeaf(name="BLOQUE_LEAF_TEST_1",comp_root='ROOT_4')
     new_block.add_leaf_block([new_block_leaf])
     new_block.save()
-    new_block_leaf_2=BloqueLeaf(name="BLOQUE_LEAF_TEST_2")
-    new_block.add_leaf_block([new_block_leaf_2])
-    new_block.save()
-
-
-    #Buscar por id del bloque hoja
-    id_to_search=new_block_leaf_2.public_id
-    success,result=new_block.search_leaf_by_id(id_to_search)
-    # Editar bloque hoja
-    new_block_leaf.edit_leaf_block({'name':"BLOQUE_DE_TEST"})
-    new_block.save()
-   #Borrar bloque hoja
-    new_block.delete_leaf_by_id(id_to_search)
-    new_block.save()
+   #  new_block_leaf_2=BloqueLeaf(name="BLOQUE_LEAF_TEST_2")
+   #  new_block.add_leaf_block([new_block_leaf_2])
+   #  new_block.save()
+   #
+   #
+   #  #Buscar por id del bloque hoja
+   #  id_to_search=new_block_leaf_2.public_id
+   #  success,result=new_block.search_leaf_by_id(id_to_search)
+   #  # Editar bloque hoja
+   #  new_block_leaf.edit_leaf_block({'name':"BLOQUE_DE_TEST"})
+   #  new_block.save()
+   # #Borrar bloque hoja
+   #  new_block.delete_leaf_by_id(id_to_search)
+   #  new_block.save()
 
 
     disconnect()

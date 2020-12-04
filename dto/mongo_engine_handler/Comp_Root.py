@@ -205,3 +205,6 @@ class ComponenteRoot(Document):
     def to_dict(self):
         return dict(public_id=self.public_id, bloque=self.block, nombre=self.name,
                     internals=[i.to_dict() for i in self.internals], position_x_y=self.position_x_y)
+
+    def update_position_x_y(self, pos_x: float, pos_y: float):
+        self.position_x_y = [pos_x, pos_y]
