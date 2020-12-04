@@ -30,9 +30,9 @@ class BlockAPI(Resource):
             blockroot = BloqueRoot(public_id=block_public_id, name=data['name'])
             blockrootdb = BloqueRoot.objects(public_id=block_public_id).first()
             if not blockrootdb is None:
-                return dict(success=False, bloque_root=None, msg='Este bloque root ya existe'), 409
+                return dict(success=False, bloqueroot=None, msg='Este bloque root ya existe'), 409
             blockroot.save()
-            return dict(success=True, bloque_root=blockroot.to_dict(),
+            return dict(success=True, bloqueroot=blockroot.to_dict(),
                         msg="El bloque root fue ingresado en la base de datos")
         except Exception as e:
             return default_error_handler(e)
@@ -40,6 +40,17 @@ class BlockAPI(Resource):
 
 
 
+# JE_cambios
+
+    def get(self, public_id: str = "Public Id del bloque root"):
+        """ Obtener el bloque root mediante su public_id """
+        try:
+            block_root = BloqueRoot.objects(public_id=public_id).first()
+            if block_root is None:
+                return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
+            return dict(success=True, bloqueroot=block_root.to_dict(), msg=f"{block_root} fue encontrado", ), 200
+        except Exception as e:
+            return default_error_handler(e)
 
 
 
