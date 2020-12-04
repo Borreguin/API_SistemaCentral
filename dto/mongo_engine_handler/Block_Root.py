@@ -15,27 +15,24 @@ from settings import initial_settings as init
 from dto.mongo_engine_handler.Comp_Internal import ComponenteInternal
 from dto.mongo_engine_handler.Comp_Leaf import ComponenteLeaf
 
+
 class BloqueRoot(Document):
     public_id = StringField(required=True, default=None)
     name = StringField(required=True, unique=True)
     calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
     updated = DateTimeField(default=dt.datetime.now())
-    block_leafs = ListField(EmbeddedDocumentField(BloqueLeaf), required=True)
+    block_leafs = ListField(EmbeddedDocumentField(BloqueLeaf), default=[])
     document = StringField(required=True, default="BloqueRoot")
     unique=StringField(required=True, unique=True)
     meta = {"collection": "CONFG|Bloques"}
-
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
 
         if self.public_id is None:
             self.public_id = str(uuid.uuid4())
-        if len(self.block_leafs)==0:
-           new_block_leaf=BloqueLeaf(name=self.name, calculation_type="LEAF")
-           self.block_leafs=[new_block_leaf]
         if self.calculation_type is None:
-            self.calculation_type=init.AVAILABLE_OPERATIONS[0]
+            self.calculation_type = init.AVAILABLE_OPERATIONS[1]
         if self.unique is None:
             self.unique=str(self.name).lower()
 
@@ -186,4 +183,4 @@ class BloqueRoot(Document):
             return False, f"No existe padre del bloque leaf [{id_leaf}]"
 
     def to_dict(self):
-        return dict(nombre=self.name, block_leafs=[i.to_dict() for i in self.block_leafs])
+        return dict(public_id=self.public_id, name=self.name, blockleafs=[i.to_dict() for i in self.block_leafs])

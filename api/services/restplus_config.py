@@ -43,9 +43,9 @@ def default_error_handler(e):
     api_log.error(msg)
     api_log.error(traceback.format_exc())
     if hasattr(e, 'data'):
-        return dict(success=False, errors=str(e.data["errors"])), 400
+        return dict(success=False, msg=str(e.data["errors"])), 400
 
-    return dict(success=False, errors=str(e)), 500
+    return dict(success=False, msg=str(e)), 500
 
 
 @api.errorhandler(NoResultFound)
