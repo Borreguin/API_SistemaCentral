@@ -25,9 +25,25 @@ def test():
     new_block=BloqueRoot(name=f"BLOQUE_ROOT_{str(r.randint(1,1000))}")
     new_block.save()
 
-    new_block_leaf=BloqueLeaf(name="BLOQUE_LEAF_TEST_1",comp_root='ROOT_4')
+    new_block_leaf=BloqueLeaf(name="BLOQUE_LEAF_TEST_1")
     new_block.add_leaf_block([new_block_leaf])
     new_block.save()
+
+    new_component = ComponenteRoot(block=new_block_leaf.name, name=f"ROOT_{str(r.randint(1, 1000))}")
+    new_component.save()
+    new_component_1 = ComponenteRoot(block=new_block_leaf.name, name=f"ROOT_{str(r.randint(1, 1000))}")
+    new_component_1.save()
+    new_component_2 = ComponenteRoot(block=new_block_leaf.name, name=f"ROOT_{str(r.randint(1, 1000))}")
+    new_component_2.save()
+
+    new_block_leaf.comp_roots.append(new_component)
+    new_block_leaf.comp_roots.append(new_component_1)
+    new_block_leaf.comp_roots.append(new_component_2)
+    new_block.save()
+
+    new_block_root_db=BloqueRoot.objects(public_id=new_block.public_id).first()
+    print(new_block_root_db)
+    print(new_block_root_db.to_dict())
    #  new_block_leaf_2=BloqueLeaf(name="BLOQUE_LEAF_TEST_2")
    #  new_block.add_leaf_block([new_block_leaf_2])
    #  new_block.save()

@@ -1,5 +1,5 @@
 # This script implements the User Management CRUD actions: Create, Update, Delete
-from flask_login import login_required, current_user
+#from flask_login import login_required, current_user
 from flask_restplus import Resource
 from flask import request,  make_response
 # importando configuraciones desde modulo de inicio (__init__.py)
@@ -47,7 +47,8 @@ class ComponentAPIByID(Resource):
                         msg=f"El componente root {componenteroot} fue editado"), 200
         except Exception as e:
             return default_error_handler(e)
-
+    #TODO: CAMBIAR PARA NO DEJARSE ELIMINAR LIBREMENTE
+    #ELIMINACIÓN A NIVEL DE BLOQUE LEAF
     def delete(self, public_id: str = "Public Id del componente"):
         """ Eliminar un componente root mediante su public_id """
         try:
