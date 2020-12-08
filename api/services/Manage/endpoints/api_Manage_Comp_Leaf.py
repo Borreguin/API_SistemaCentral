@@ -125,7 +125,7 @@ class ComponentAPI(Resource):
 
 ####################################################
 
-@ns.route('/<string:block_public_id>/leaf/<string:leaf_public_id>')
+@ns.route('/<string:public_id>/leaf/<string:leaf_public_id>')
 class ComponentAPIByID(Resource):
 
     def get(self, block_public_id: str = "Public Id del bloque root",
@@ -146,7 +146,7 @@ class ComponentAPIByID(Resource):
     @api.expect(ser_from.blockroot)
     def put(self, block_public_id: str = "Public Id del bloque root",
             leaf_public_id: str = "Public Id del bloque leaf"):
-        """ Edita un bloque leaf de la Base de Datos usando su id público y block_public_id"""
+        """ Edita un bloque leaf de la Base de Datos usando su id público y public_id"""
         try:
             edited_block = request.get_json()
             bloque_root = BloqueRoot.objects(public_id=block_public_id).first()

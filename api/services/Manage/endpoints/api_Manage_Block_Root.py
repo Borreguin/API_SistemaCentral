@@ -20,27 +20,22 @@ ns = api.namespace('block-root', description='Administración de bloque root')
 ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
-@ns.route('/<string:block_public_id>')
+@ns.route('/<string:public_id>')
 class BlockAPI(Resource):
     @api.expect(ser_from.blockroot)
-    def post(self, block_public_id: str = "Public Id del bloque root"):
+    def post(self, public_id: str = "Public Id del bloque root"):
         """ Crea un nuevo bloque root """
         try:
             data = request.get_json()
-            blockroot = BloqueRoot(public_id=block_public_id, name=data['name'])
-            blockrootdb = BloqueRoot.objects(public_id=block_public_id).first()
+            blockroot = BloqueRoot(public_id=public_id, name=data['name'])
+            blockrootdb = BloqueRoot.objects(public_id=public_id).first()
             if not blockrootdb is None:
-                return dict(success=False, bloqueroot=None, msg='Este bloque root ya existe'), 409
+                return dict(success=False, bloqueroot=None, msg='Este bloque ya existe'), 409
             blockroot.save()
             return dict(success=True, bloqueroot=blockroot.to_dict(),
                         msg="El bloque root fue ingresado en la base de datos")
         except Exception as e:
             return default_error_handler(e)
-
-
-
-
-# JE_cambios
 
     def get(self, public_id: str = "Public Id del bloque root"):
         """ Obtener el bloque root mediante su public_id """
@@ -52,5 +47,18 @@ class BlockAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-
-
+    @api.expect(ser_from.blockroot)
+    def put(self, public_id: str = "Public Id del bloque root"):
+        """ Edita un bloque root """
+        try:
+            data = request.get_json()
+            blockrootdb = BloqueRoot.objects(public_id=public_id).first()
+            if blockrootdb is None:
+                return dict(success=False, bloqueroot=None, msg='Este bloque no existe'), 409
+            success, msg = blockrootdb.edit_root_block(data)
+            if success:
+                blockrootdb.save()
+            return dict(success=success, bloqueroot=blockrootdb.to_dict(),
+                        msg=msg)
+        except Exception as e:
+            return default_error_handler(e)

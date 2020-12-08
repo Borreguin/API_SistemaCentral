@@ -39,7 +39,7 @@ class ComponentAPI(Resource):
             return default_error_handler(e)
 
 
-@ns.route('/<string:block_public_id>/leaf/<string:leaf_public_id>')
+@ns.route('/<string:public_id>/leaf/<string:leaf_public_id>')
 class BlocLeafByID(Resource):
 
     def get(self, block_public_id: str = "Public Id del bloque root",
@@ -91,7 +91,7 @@ class BlocLeafByID(Resource):
 
 
 #####################################################
-@ns.route('/<string:block_public_id>/leaf')
+@ns.route('/<string:public_id>/leaf')
 class Block_leafAPI(Resource):
     @api.expect(ser_from.blockroot)
     def post(self, block_public_id: str = "Public Id del bloque root"):

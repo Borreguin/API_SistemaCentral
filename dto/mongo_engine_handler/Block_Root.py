@@ -61,8 +61,7 @@ class BloqueRoot(Document):
     #Funciones para editar
     def edit_root_block(self,new_root:dict):
         try:
-
-            to_update = ["nombre", "calculation_type"]
+            to_update = ["name", "calculation_type"]
             for key, value in new_root.items():
                 if key in to_update:
                     setattr(self, key, value)
@@ -157,8 +156,8 @@ class BloqueRoot(Document):
 
         success, internal_old=self.search_internal_by_id(internal_id)
         if success:
-            new_root_component = ComponenteRoot(public_id=internal_old.public_id, nombre=internal_old.name,\
-                                                block_leafs=internal,bloque=bloque)
+            new_root_component = ComponenteRoot(public_id=internal_old.public_id, name=internal_old.name, \
+                                                block_leafs=internal, bloque=bloque)
             self.delete_internal_by_id(internal_id)
 
             check = [i for i, e in enumerate(internal)]
