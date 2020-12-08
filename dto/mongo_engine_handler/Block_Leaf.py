@@ -19,9 +19,8 @@ class BloqueLeaf(EmbeddedDocument):
     calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
     updated = DateTimeField(default=dt.datetime.now())
-    #PRUEBA REFERENCIAR A COMPONENTE ROOT
-    #comp_root=ReferenceField(ComponenteRoot)
-
+    #REFERENCIA COMPONENTE ROOT
+    comp_roots=ListField(ReferenceField(ComponenteRoot,dbref=True), default=[])
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
         if self.public_id is None:
@@ -29,7 +28,9 @@ class BloqueLeaf(EmbeddedDocument):
         if self.calculation_type is None:
             self.calculation_type=init.AVAILABLE_OPERATIONS[0]
 
+
     # TODO: VALIDAR SI SE REQUIERE FUNCION PARA ADICIONAR COMPONENTES ROOT AL BLOQUE LEAF
+    # TODO: ELIMINAR COMPONENTES ROOTS
     def add_root_component(self,root_component:list):
         # check si todas los root_component son de tipo ComponenteRoot
         check = [isinstance(t, ComponenteRoot) for t in root_component]
@@ -75,4 +76,9 @@ class BloqueLeaf(EmbeddedDocument):
         return self.calculation_type is not None
 
     def to_dict(self):
-        return dict(name=self.name, calculation_type=self.calculation_type, position_x_y=self.position_x_y)
+        root_to_dict=[]
+        for comp in self.comp_roots:
+            if hasattr(comp,"name"):
+                root_to_dict.append(comp.to_dict())
+        return dict(name=self.name, calculation_type=self.calculation_type, position_x_y=self.position_x_y,
+                    comp_roots=root_to_dict)
