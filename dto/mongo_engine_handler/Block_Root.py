@@ -34,10 +34,11 @@ class BloqueRoot(Document):
         if self.calculation_type is None:
             self.calculation_type = init.AVAILABLE_OPERATIONS[1]
         if self.unique is None:
-            self.unique=str(self.name).lower()
+            self.unique = str(self.name).lower()
 
-    def add_leaf_block(self,leaf_block:list):
-        # check si todas los leaf_block son de tipo ComponenteInternal
+    def add_and_replace_leaf_block(self, leaf_block: list):
+        # Esta función añade nuevos leafs blocks, en caso que ya exista el bloque leaf este es reemplazado
+        # check si todas los leaf_block_list son de tipo ComponenteInternal
         check = [isinstance(t, BloqueLeaf) for t in leaf_block]
         if not all(check):
             lg = [str(leaf_block[i]) for i, v in enumerate(check) if not v]
@@ -48,18 +49,42 @@ class BloqueRoot(Document):
         n_initial = len(self.block_leafs)
         n_total = len(unified_list)
         for u in unified_list:
-            unique.update({u.public_id: u})
+            unique.update({str(u.name).lower(): u})
         self.block_leafs = [unique[k] for k in unique.keys()]
         n_final = len(self.block_leafs)
         self.delete_leaf(self.name)
         return True, f"Bloques: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
 
+    def add_new_leaf_block(self, leaf_block_list: list):
+        # Añade solamente aquellos que son nuevos
+        # check si todas los leaf_block_list son de tipo ComponenteInternal
+        check = [isinstance(t, BloqueLeaf) for t in leaf_block_list]
+        if not all(check):
+            lg = [str(leaf_block_list[i]) for i, v in enumerate(check) if not v]
+            return False, [f"La siguiente lista de bloques internos no es compatible:"] + lg
+        # unificando las lista y crear una sola
+        new_leafs = list()
+        for n_leaf in leaf_block_list:
+            not_found = True
+            for b_leaf in self.block_leafs:
+                if str(n_leaf.name).lower().strip() == str(b_leaf.name).lower().strip():
+                    not_found = False
+            if not_found:
+                new_leafs.append(n_leaf)
+
+        success = len(new_leafs) > 0
+        if success:
+            self.block_leafs += new_leafs
+            self.block_leafs.sort(key=lambda x: x.name)
+        msg = "El bloque ya existe" if len(leaf_block_list) == 1 else "Los bloques ya existen"
+        return success, f"Bloques añadidos: [{len(new_leafs)}]" if success else msg
+
     # TODO: Root to internal (Funcion de bloque??)
-    def change_root_to_internal(self,root):
+    def change_root_to_internal(self, root):
         pass
 
-    #Funciones para editar
-    def edit_root_block(self,new_root:dict):
+    # Funciones para editar
+    def edit_root_block(self, new_root: dict):
         try:
             to_update = ["name", "calculation_type"]
             for key, value in new_root.items():
