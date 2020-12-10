@@ -33,12 +33,18 @@ def test():
     new_component.save()
     new_component_1 = ComponenteRoot(block=new_block_leaf.name, name=f"ROOT_{str(r.randint(1, 1000))}")
     new_component_1.save()
-    new_component_2 = ComponenteRoot(block=new_block_leaf.name, name=f"ROOT_{str(r.randint(1, 1000))}")
-    new_component_2.save()
+
 
     new_block_leaf.comp_roots.append(new_component)
-    new_block_leaf.comp_roots.append(new_component_1)
-    new_block_leaf.comp_roots.append(new_component_2)
+  #  new_block_leaf.comp_roots.append(new_component_1)
+    new_block.save()
+
+    new_component_2 = ComponenteRoot(block=new_block_leaf.name, name=f"ROOT_{str(r.randint(1, 1000))}")
+    new_component_2.save()
+    new_block_leaf.add_root_component([new_component_2])
+    new_block.save()
+
+    new_block_leaf.delete_root_component([new_component_1])
     new_block.save()
 
     new_block_root_db=BloqueRoot.objects(public_id=new_block.public_id).first()

@@ -29,9 +29,9 @@ class BloqueLeaf(EmbeddedDocument):
         if self.calculation_type is None:
             self.calculation_type = init.AVAILABLE_OPERATIONS[0]
 
-    # TODO: VALIDAR SI SE REQUIERE FUNCION PARA ADICIONAR COMPONENTES ROOT AL BLOQUE LEAF
-    # TODO: ELIMINAR COMPONENTES ROOTS
-    def add_root_component(self, root_component: list):
+
+
+    def add_root_component(self,root_component:list):
         # check si todas los root_component son de tipo ComponenteRoot
         check = [isinstance(t, ComponenteRoot) for t in root_component]
         if not all(check):
@@ -39,17 +39,30 @@ class BloqueLeaf(EmbeddedDocument):
             return False, [f"La siguiente lista de componentes root no es compatible:"] + lg
 
         # unificando las lista y crear una sola
-        unique = dict()
-        unified_list = self.root_id + root_component
-        n_initial = len(self.root_id)
+        unified_list = self.comp_roots + root_component
+        n_initial = len(self.comp_roots)
         n_total = len(unified_list)
-        for u in unified_list:
-            unique.update({u.public_id: u})
-        self.root_id = [unique[k] for k in unique.keys()]
-        n_final = len(self.root_id)
+        self.comp_roots=unified_list
+        n_final=len(self.comp_roots)
         return True, f"Componentes root: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
 
-    def edit_leaf_block(self, new_leaf_block: dict):
+
+    def delete_root_component(self, root_component:list):
+        # check si todas los root_component son de tipo ComponenteRoot
+        check = [isinstance(t, ComponenteRoot) for t in root_component]
+        if not all(check):
+            lg = [str(root_component[i]) for i, v in enumerate(check) if not v]
+            return False, [f"La siguiente lista de componentes root no es compatible:"] + lg
+        if len(self.comp_roots)==0:
+            return False, [f"La lista de componentes root esta vacia"]
+        for comp in self.comp_roots:
+            for root in root_component:
+                if comp==root:
+                    self.comp_roots.remove(root)
+                    return True,f'Elemento {root} eliminado'
+        return False
+
+    def edit_leaf_block(self, new_leaf_block:dict):
         try:
             to_update = ["name", "calculation_type"]
             for key, value in new_leaf_block.items():
