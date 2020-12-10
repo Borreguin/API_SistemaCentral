@@ -15,18 +15,19 @@ from dto.mongo_engine_handler.Comp_Root import *
 
 class BloqueLeaf(EmbeddedDocument):
     public_id = StringField(required=True, default=None)
-    name = StringField(required=True)
+    name = StringField(required=True, unique=True)
     calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
     updated = DateTimeField(default=dt.datetime.now())
-    #REFERENCIA COMPONENTE ROOT
-    comp_roots=ListField(ReferenceField(ComponenteRoot,dbref=True), default=[])
+    # REFERENCIA COMPONENTE ROOT
+    comp_roots = ListField(ReferenceField(ComponenteRoot, dbref=True), default=[])
+
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
         if self.public_id is None:
             self.public_id = str(uuid.uuid4())
         if self.calculation_type is None:
-            self.calculation_type=init.AVAILABLE_OPERATIONS[0]
+            self.calculation_type = init.AVAILABLE_OPERATIONS[0]
 
 
 
@@ -46,7 +47,7 @@ class BloqueLeaf(EmbeddedDocument):
         return True, f"Componentes root: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
 
 
-    def delete_root_component(self,root_component:list):
+    def delete_root_component(self, root_component:list):
         # check si todas los root_component son de tipo ComponenteRoot
         check = [isinstance(t, ComponenteRoot) for t in root_component]
         if not all(check):
@@ -61,7 +62,7 @@ class BloqueLeaf(EmbeddedDocument):
                     return True,f'Elemento {root} eliminado'
         return False
 
-    def edit_leaf_block(self,new_leaf_block:dict):
+    def edit_leaf_block(self, new_leaf_block:dict):
         try:
             to_update = ["name", "calculation_type"]
             for key, value in new_leaf_block.items():
@@ -88,9 +89,10 @@ class BloqueLeaf(EmbeddedDocument):
         return self.calculation_type is not None
 
     def to_dict(self):
-        root_to_dict=[]
+        root_to_dict = []
         for comp in self.comp_roots:
-            if hasattr(comp,"name"):
+            if hasattr(comp, "name"):
                 root_to_dict.append(comp.to_dict())
-        return dict(name=self.name, calculation_type=self.calculation_type, position_x_y=self.position_x_y,
+        return dict(public_id=self.public_id, name=self.name, calculation_type=self.calculation_type,
+                    position_x_y=self.position_x_y,
                     comp_roots=root_to_dict)

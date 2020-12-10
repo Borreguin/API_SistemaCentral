@@ -95,3 +95,20 @@ class ComponentAPI(Resource):
                         msg="El componente root fue ingresado en la base de datos")
         except Exception as e:
             return default_error_handler(e)
+
+
+@ns.route('/')
+class CompRootAPI(Resource):
+    @api.expect(ser_from.rootcomponent)
+    def post(self):
+        """ Crea un nuevo componente root """
+        try:
+            data = request.get_json()
+            componenteroot = ComponenteRoot(**data)
+            componenterootdb = ComponenteRoot.objects(block=data['block'], name=data['name']).first()
+            if not componenterootdb is None:
+                return dict(success=False, msg='Este componente root ya existe'), 409
+            componenteroot.save()
+            return dict(success=True, msg="El componente root fue ingresado en la base de datos")
+        except Exception as e:
+            return default_error_handler(e)

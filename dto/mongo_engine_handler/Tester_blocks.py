@@ -26,7 +26,7 @@ def test():
     new_block.save()
 
     new_block_leaf=BloqueLeaf(name="BLOQUE_LEAF_TEST_1")
-    new_block.add_leaf_block([new_block_leaf])
+    new_block.add_and_replace_leaf_block([new_block_leaf])
     new_block.save()
 
     new_component = ComponenteRoot(block=new_block_leaf.name, name=f"ROOT_{str(r.randint(1, 1000))}")

@@ -20,7 +20,7 @@ api = ser_from.add_serializers()
 
 
 @ns.route('/position/<id_root>/<id_leaf>')
-class ComponentAPI(Resource):
+class BloqueAPI(Resource):
     @api.expect(ser_from.position)
     def put(self, id_root="Id del componente root", id_leaf="Id del componente leaf"):
         """ Actualiza la posición x e y """
@@ -39,7 +39,7 @@ class ComponentAPI(Resource):
             return default_error_handler(e)
 
 
-@ns.route('/<string:public_id>/leaf/<string:leaf_public_id>')
+@ns.route('/<string:block_public_id>/leaf/<string:leaf_public_id>')
 class BlocLeafByID(Resource):
 
     def get(self, block_public_id: str = "Public Id del bloque root",
@@ -80,33 +80,31 @@ class BlocLeafByID(Resource):
         try:
             bloque_root = BloqueRoot.objects(public_id=block_public_id).first()
             if bloque_root is None:
-                return dict(success=False, msg="El bloque root no existe"), 404
+                return dict(success=False, bloqueroot=None, msg="El bloque root no existe"), 404
             success, mensaje = bloque_root.delete_leaf_by_id(leaf_public_id)
             if success:
                 bloque_root.save()
-                return dict(success=True, msg=mensaje), 200
-            return dict(success=False, msg=mensaje)
+                return dict(success=True, bloqueroot=bloque_root.to_dict(), msg=mensaje), 200
+            return dict(success=False, bloqueroot=bloque_root.to_dict(), msg=mensaje)
         except Exception as e:
             return default_error_handler(e)
 
 
-#####################################################
 @ns.route('/<string:public_id>/leaf')
 class Block_leafAPI(Resource):
     @api.expect(ser_from.blockroot)
-    def post(self, block_public_id: str = "Public Id del bloque root"):
+    def post(self, public_id: str = "Public Id del bloque root"):
         """ Crea un nuevo bloque leaf usando public_id del bloque root """
         try:
             data = request.get_json()
-            bloqueleaf = BloqueLeaf(name=data['name'])
-            bloqueroot_db = BloqueRoot.objects(public_id=block_public_id).first()
+            bloqueleaf = BloqueLeaf(**data)
+            bloqueroot_db = BloqueRoot.objects(public_id=public_id).first()
             if bloqueroot_db is None:
                 return dict(success=False, bloqueroot=None,
                             msg="No existen bloques root asociados a este Public Id"), 404
-            success, mensaje = bloqueroot_db.add_leaf_block([bloqueleaf])
+            success, msg = bloqueroot_db.add_new_leaf_block([bloqueleaf])
             if success:
                 bloqueroot_db.save()
-                return dict(success=True, msg=f"El bloque leaf {data['name']} fue ingresado en la base de datos")
-            return dict(success=False, msg="El bloque leaf no fue ingresado en la base de datos")
+            return dict(success=success, bloqueroot=bloqueroot_db.to_dict(), msg=msg)
         except Exception as e:
             return default_error_handler(e)
