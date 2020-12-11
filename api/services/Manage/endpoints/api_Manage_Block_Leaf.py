@@ -65,12 +65,13 @@ class BlocLeafByID(Resource):
             edited_block = request.get_json()
             bloque_root = BloqueRoot.objects(public_id=block_public_id).first()
             if bloque_root is None:
-                return dict(success=False, block=None, msg="No existen bloques root asociados a este Public Id"), 404
+                return dict(success=False, bloqueroot=None,
+                            msg="No existen bloques root asociados a este Public Id"), 404
             success, edited, mensaje = bloque_root.edit_leaf_by_id(leaf_public_id, edited_block)
             if not success:
-                return dict(success=False, block=None, msg=mensaje), 409
+                return dict(success=False, bloqueroot=None, msg=mensaje), 409
             bloque_root.save()
-            return dict(success=True, block=edited.to_dict(), msg=mensaje), 200
+            return dict(success=True, bloqueroot=bloque_root.to_dict(), msg=mensaje), 200
         except Exception as e:
             return default_error_handler(e)
 
