@@ -27,6 +27,11 @@ class Serializers:
             "name": fields.String(required=True, description="nombre del componente")
         })
 
+        """ serializer for root component """
+        self.rootcomponentname = api.model("rootcomponentname", {
+            "name": fields.String(required=True, description="Nombre del componente")
+        })
+
         """ serializer for internal component """
         self.internalcomponent = api.model("internalcomponent", {
             "name": fields.String(required=True, description="Nombre del componente internal")

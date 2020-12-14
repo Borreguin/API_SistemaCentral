@@ -3,6 +3,7 @@
 from flask_restplus import Resource
 from flask import request,  make_response
 # importando configuraciones desde modulo de inicio (__init__.py)
+from dto.mongo_engine_handler.Block_Root import BloqueRoot
 from . import api
 from . import default_error_handler
 from . import serializers as srl
@@ -79,36 +80,28 @@ class ComponentAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('')
-class ComponentAPI(Resource):
-    @api.expect(ser_from.rootcomponent)
-    def post(self):
-        """ Crea un nuevo componente root """
-        try:
-            data = request.get_json()
-            componenteroot = ComponenteRoot(**data)
-            componenterootdb = ComponenteRoot.objects(block=data['block'], name=data['name']).first()
-            if not componenterootdb is None:
-                return dict(success=False, msg='Este componente root ya existe'), 409
-            componenteroot.save()
-            return dict(success=True, component=componenteroot.to_dict(),
-                        msg="El componente root fue ingresado en la base de datos")
-        except Exception as e:
-            return default_error_handler(e)
 
-
-@ns.route('/')
+@ns.route('/<string:root_block_id>/<string:leaf_block_id>')
 class CompRootAPI(Resource):
-    @api.expect(ser_from.rootcomponent)
-    def post(self):
+    @api.expect(ser_from.rootcomponentname)
+    def post(self, root_block_id, leaf_block_id):
         """ Crea un nuevo componente root """
         try:
+            # Buscando Bloque root y Bloque Leaf asociado
+            root_block_db = BloqueRoot.objects(public_id=root_block_id).first()
+            if root_block_db is None:
+                return dict(success=False, rootcomponent=None, msg="No existe un bloque asociado a este id"), 404
+            success, leaf_block_db = root_block_db.search_leaf_by_id(leaf_block_id)
+            if not success:
+                return dict(success=False, rootcomponent=None,
+                            msg="No existe un bloque interno asociado a este id"), 404
+            # Creando el componente nuevo
             data = request.get_json()
-            componenteroot = ComponenteRoot(**data)
-            componenterootdb = ComponenteRoot.objects(block=data['block'], name=data['name']).first()
-            if not componenterootdb is None:
-                return dict(success=False, msg='Este componente root ya existe'), 409
-            componenteroot.save()
-            return dict(success=True, msg="El componente root fue ingresado en la base de datos")
+            root_component = ComponenteRoot(block=leaf_block_db.name, **data)
+            success, msg = leaf_block_db.add_new_root_component([root_component])
+            if success:
+                root_component.save()
+                root_block_db.save()
+            return dict(success=True, rootcomponent=root_component.to_dict(), msg=msg), 200
         except Exception as e:
             return default_error_handler(e)
