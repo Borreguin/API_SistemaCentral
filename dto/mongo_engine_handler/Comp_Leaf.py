@@ -30,7 +30,7 @@ class ComponenteLeaf(EmbeddedDocument):
     def edit_leaf_component(self, new_internal: dict):
         try:
 
-            to_update = ["nombre", "calculation_type"]
+            to_update = ["name", "calculation_type"]
             for key, value in new_internal.items():
                 if key in to_update:
                     setattr(self, key, value)
