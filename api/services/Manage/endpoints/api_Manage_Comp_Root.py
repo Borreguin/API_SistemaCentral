@@ -53,6 +53,7 @@ class ComponentAPI(Resource):
             return default_error_handler(e)
 
 
+
 @ns.route('/<string:root_block_id>/<string:leaf_block_id>')
 class CompRootAPI(Resource):
     @api.expect(ser_from.rootcomponentname)
@@ -144,4 +145,24 @@ class CompRootAPI(Resource):
             return dict(success=success, bloqueroot=root_block_db.to_dict(),
                         msg=msg), 200 if success else 409
         except Exception as e:
+            return default_error_handler(e)
+          
+
+@ns.route('/position/<id_root>')
+class ComponentPositionAPI(Resource):
+    @api.expect(ser_from.position)
+    def put(self, id_root="Id del componente root"):
+        """ Actualiza la posición x e y """
+        try:
+            data = request.get_json()
+            pos_x = data["pos_x"]
+            pos_y = data["pos_y"]
+            component_root_db = ComponenteRoot.objects(public_id=id_root).first()
+            if component_root_db is None:
+                return dict(success=False, component_leaf=None,
+                            msg=f"No existe el componente root asociado a la id {id_root}")
+            component_root_db.update_position_x_y(pos_x, pos_y)
+            component_root_db.save()
+            return dict(success=True, component_root=component_root_db.to_dict(), msg="Se actualizó position (x, y)")
+         except Exception as e:
             return default_error_handler(e)
