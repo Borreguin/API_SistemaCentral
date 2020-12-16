@@ -5,6 +5,8 @@ DP V.1
 """
 import hashlib
 import traceback
+
+from dto.Classes.Operation import Operation
 from dto.mongo_engine_handler import log
 from mongoengine import *
 import datetime as dt
@@ -23,7 +25,8 @@ class BloqueRoot(Document):
     updated = DateTimeField(default=dt.datetime.now())
     block_leafs = ListField(EmbeddedDocumentField(BloqueLeaf), default=[])
     document = StringField(required=True, default="BloqueRoot")
-    unique=StringField(required=True, unique=True)
+    topology = DictField(required=False, default=dict())
+    unique = StringField(required=True, unique=True)
     meta = {"collection": "CONFG|Bloques"}
 
     def __init__(self, *args, **values):
@@ -38,7 +41,7 @@ class BloqueRoot(Document):
 
     def add_and_replace_leaf_block(self, leaf_block: list):
         # Esta función añade nuevos leafs blocks, en caso que ya exista el bloque leaf este es reemplazado
-        # check si todas los leaf_block_list son de tipo ComponenteInternal
+        # check si todas los root_component_list son de tipo ComponenteInternal
         check = [isinstance(t, BloqueLeaf) for t in leaf_block]
         if not all(check):
             lg = [str(leaf_block[i]) for i, v in enumerate(check) if not v]
@@ -57,7 +60,7 @@ class BloqueRoot(Document):
 
     def add_new_leaf_block(self, leaf_block_list: list):
         # Añade solamente aquellos que son nuevos
-        # check si todas los leaf_block_list son de tipo ComponenteInternal
+        # check si todas los root_component_list son de tipo ComponenteInternal
         check = [isinstance(t, BloqueLeaf) for t in leaf_block_list]
         if not all(check):
             lg = [str(leaf_block_list[i]) for i, v in enumerate(check) if not v]
@@ -90,24 +93,27 @@ class BloqueRoot(Document):
             for key, value in new_root.items():
                 if key in to_update:
                     setattr(self, key, value)
-            self.updated=dt.datetime.now()
+            self.updated = dt.datetime.now()
 
-            return True,f"Bloque Root editado"
+            return True, f"Bloque Root editado"
 
         except Exception as e:
 
             msg = f"Error al actualizar {self}​​: {str(e)}​​"
-            tb = traceback.format_exc() #Registra últimos pasos antes del error
+            tb = traceback.format_exc()  # Registra últimos pasos antes del error
             log.error(f"{msg}​​ \n {tb}​​")
             return False, msg
 
-    def edit_leaf_by_id(self,public_id:str,new_leaf:dict):
+
+    def edit_leaf_by_id(self, public_id: str, new_leaf: dict):
         check = [i for i, e in enumerate(self.block_leafs) if public_id == e.public_id]
         if len(check) == 0:
             return False, None, "No encontró bloque leaf asociado a este Id público"
         try:
             success, msg = self.block_leafs[check[0]].edit_leaf_block(new_leaf)
             if success:
+                for comp in self.block_leafs[check[0]].comp_roots:
+                    comp.block = self.block_leafs[check[0]].name
                 return success, self.block_leafs[check[0]], msg
             return False, None, msg
         except Exception as e:
@@ -119,9 +125,9 @@ class BloqueRoot(Document):
     def __str__(self):
         return f"<Bloque Root {self.name},{len(self.block_leafs)}>"
 
-    #FUNCIONES DELETE
+    # FUNCIONES DELETE
 
-    def delete_leaf(self, name_delete:str):
+    def delete_leaf(self, name_delete: str):
         new_block_leafs = [e for e in self.block_leafs if name_delete != e.name]
         if len(new_block_leafs) == len(self.block_leafs):
             return False, f"No existe el bloque [{name_delete}] en el bloque root [{self.name}]"
@@ -131,7 +137,7 @@ class BloqueRoot(Document):
             self.block_leafs = [new_block_leafs]
         return True, "Bloque leaf eliminado"
 
-    def delete_leaf_by_id(self, id_leaf:str):
+    def delete_leaf_by_id(self, id_leaf: str):
         new_block_leafs = [e for e in self.block_leafs if id_leaf != e.public_id]
         if len(new_block_leafs) == len(self.block_leafs):
             return False, f"No existe el bloque [{id_leaf}] en el bloque root [{self.name}]"
@@ -141,24 +147,12 @@ class BloqueRoot(Document):
             self.block_leafs = [new_block_leafs]
         return True, "Bloque leaf eliminado"
 
-
-    #TODO: REVISAR FUNCION SI ES NECESARIO
-    def delete_all(self): #REVISAR FUNCION
-        pass
-        # for e in self.block_leafs:
-          #  self.delete()
-
     # FUNCIONES SEARCH
 
     def search_leaf(self, leaf_nombre: str):
         check = [i for i, e in enumerate(self.block_leafs) if leaf_nombre == e.name]
         if len(check) > 0:
             return True, self.block_leafs[check[0]]
-        elif len(self.block_leafs) > 0:
-            for internal in self.block_leafs:
-                success, result = internal.search_leaf(leaf_nombre)
-                if success:
-                    return success, result
         else:
             return False, f"No existe el bloque [{leaf_nombre}] en el bloque root [{self.name}]"
 
@@ -166,45 +160,32 @@ class BloqueRoot(Document):
         check = [i for i, e in enumerate(self.block_leafs) if id_leaf == e.public_id]
         if len(check) > 0:
             return True, self.block_leafs[check[0]]
-        #JE_corrección: si no existe la hoja dentro del bloque root, no se debe buscar la hoja
+        # un bloque root solo tiene hojas, no hay necesidad de buscar recursivamente
         else:
             return False, f"No existe el bloque [{id_leaf}] en el bloque root [{self.name}]"
 
-
-    #TODO: EXISTE FUNCIÓN CAMBIAR BLOQUE LEAF A BLOQUE ROOT?
-    def change_internal_to_root(self,internal_id:str, internal: list, bloque:str):
-        # check si todas los componentes internos son de tipo ComponenteInternal
-        check = [isinstance(t, ComponenteInternal) for t in internal]
-        if not all(check):
-            lg = [str(internal[i]) for i, v in enumerate(check) if not v]
-            return False, [f"La siguiente lista de block_leafs no es compatible:"] + lg
-
-        success, internal_old=self.search_internal_by_id(internal_id)
+    def add_operations(self, to_add_operations: dict):
+        operating_list = [leaf.public_id for leaf in self.block_leafs]
+        print(operating_list)
+        success, msg = Operation(topology=to_add_operations, operating_list=operating_list).validate_operations()
         if success:
-            new_root_component = ComponenteRoot(public_id=internal_old.public_id, name=internal_old.name, \
-                                                block_leafs=internal, bloque=bloque)
-            self.delete_internal_by_id(internal_id)
-
-            check = [i for i, e in enumerate(internal)]
-            if len(check) > 0:
-                for i in range(len(internal)):
-                    a=internal[i-1].name
-                    self.delete_internal(internal[i-1].name)
-            new_root_component.save() #ERROR DE ID
-            return True,new_root_component,"Operación existosa"
+            self.topology = to_add_operations
+        return success, msg
 
     def validate_root(self):
-        is_ok=True
+        is_ok = True
         for leaf in self.block_leafs:
-            is_ok=leaf.validate_bloque_leaf() and is_ok
+            is_ok = leaf.validate_bloque_leaf() and is_ok
         return is_ok
 
     def search_parent_of(self, id_leaf: str):
-        check = [i for i, e in enumerate(self.block_leafs) if id_leaf == e.public_id] #BUSCA block_leafs DEL PRIMER NIVEL
+        check = [i for i, e in enumerate(self.block_leafs) if
+                 id_leaf == e.public_id]  # BUSCA block_leafs DEL PRIMER NIVEL
         if len(check) > 0:
             return True, self
         else:
             return False, f"No existe padre del bloque leaf [{id_leaf}]"
 
     def to_dict(self):
-        return dict(public_id=self.public_id, name=self.name, blockleafs=[i.to_dict() for i in self.block_leafs])
+        return dict(document=self.document, public_id=self.public_id, name=self.name,
+                    block_leafs=[i.to_dict() for i in self.block_leafs])

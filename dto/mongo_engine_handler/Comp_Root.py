@@ -64,17 +64,13 @@ class ComponenteRoot(Document):
 
     def edit_root_component(self, new_root: dict):
         try:
-
-            to_update = ["bloque", "nombre", "calculation_type"]
+            to_update = ["block", "name", "calculation_type"]
             for key, value in new_root.items():
                 if key in to_update:
                     setattr(self, key, value)
             self.updated = dt.datetime.now()
-
             return True, f"Root editado"
-
         except Exception as e:
-
             msg = f"Error al actualizar {self}​​: {str(e)}​​"
             tb = traceback.format_exc()  # Registra últimos pasos antes del error
             log.error(f"{msg}​​ \n {tb}​​")
@@ -196,6 +192,7 @@ class ComponenteRoot(Document):
             return False, f"No existe padre del componente interno [{id_internal}]"
 
     def search_leaf_by_id(self, id_leaf):
+        # Encuentra de manera recursiva una hoja dentro de cualquier internal existente
         for internal in self.internals:
             success, result = internal.search_leaf_by_id(id_leaf)
             if success:
@@ -203,7 +200,7 @@ class ComponenteRoot(Document):
         return False, f"No se encontró la hoja con el id {id_leaf}"
 
     def to_dict(self):
-        return dict(public_id=self.public_id, bloque=self.block, nombre=self.name,
+        return dict(public_id=self.public_id, bloque=self.block, name=self.name,
                     internals=[i.to_dict() for i in self.internals], position_x_y=self.position_x_y)
 
     def update_position_x_y(self, pos_x: float, pos_y: float):

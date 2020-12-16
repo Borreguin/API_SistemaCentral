@@ -131,7 +131,7 @@ class ComponenteInternal(EmbeddedDocument):
     def delete_leaf_by_id(self, id_leaf: str):
         new_leaf = [e for e in self.leafs if id_leaf != e.public_id]
         if len(new_leaf) == len(self.leafs):
-            return False, f"No existe el componente interno [{id_leaf}] en el componente root [{self.nombre}]"
+            return False, f"No existe el componente interno [{id_leaf}] en el componente root [{self.name}]"
         self.leafs = new_leaf
         if len(self.leafs) == 0:
             new_leaf = ComponenteLeaf(name=self.name)
