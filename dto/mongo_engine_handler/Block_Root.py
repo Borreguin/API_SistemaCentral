@@ -104,6 +104,7 @@ class BloqueRoot(Document):
             log.error(f"{msg}​​ \n {tb}​​")
             return False, msg
 
+
     def edit_leaf_by_id(self, public_id: str, new_leaf: dict):
         check = [i for i, e in enumerate(self.block_leafs) if public_id == e.public_id]
         if len(check) == 0:
@@ -111,6 +112,8 @@ class BloqueRoot(Document):
         try:
             success, msg = self.block_leafs[check[0]].edit_leaf_block(new_leaf)
             if success:
+                for comp in self.block_leafs[check[0]].comp_roots:
+                    comp.block = self.block_leafs[check[0]].name
                 return success, self.block_leafs[check[0]], msg
             return False, None, msg
         except Exception as e:
@@ -184,4 +187,5 @@ class BloqueRoot(Document):
             return False, f"No existe padre del bloque leaf [{id_leaf}]"
 
     def to_dict(self):
-        return dict(public_id=self.public_id, name=self.name, block_leafs=[i.to_dict() for i in self.block_leafs])
+        return dict(document=self.document, public_id=self.public_id, name=self.name,
+                    block_leafs=[i.to_dict() for i in self.block_leafs])

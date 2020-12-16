@@ -80,10 +80,21 @@ class BloqueLeaf(EmbeddedDocument):
             for root in root_component:
                 if comp == root:
                     self.comp_roots.remove(root)
-                    return True,f'Elemento {root} eliminado'
-        return False
+                    return True, f'Elemento {root} eliminado'
+        return False, "No se han encontrado los componentes de la lista"
 
-    def edit_leaf_block(self, new_leaf_block:dict):
+    def delete_root_component_by_id(self, root_component_id: str):
+        # Esta función sólo elimina en memoria el componente root
+        # para que sea eliminado en base de datos, se deberá realizar comp_root.delete()
+        for comp in self.comp_roots:
+            if comp.public_id == root_component_id:
+                self.comp_roots.remove(comp)
+                return True, f'Componente root eliminado'
+        return False, f'No se ha encontrado el componente'
+
+    def edit_leaf_block(self, new_leaf_block: dict):
+        # Esta función edita solamente en memoria el bloque leaf
+        # para que se guarde en base de datos, se deberá realizar bloqueroot.save()
         try:
             to_update = ["name", "calculation_type"]
             for key, value in new_leaf_block.items():
