@@ -164,5 +164,5 @@ class ComponentPositionAPI(Resource):
             component_root_db.update_position_x_y(pos_x, pos_y)
             component_root_db.save()
             return dict(success=True, component_root=component_root_db.to_dict(), msg="Se actualizó position (x, y)")
-         except Exception as e:
+        except Exception as e:
             return default_error_handler(e)
