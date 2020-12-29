@@ -19,7 +19,7 @@ ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
 
-@ns.route('/root/<string:root_public_id>/internal/<string:internal_public_id>')
+@ns.route('/<string:internal_public_id>/comp-root/<string:root_public_id>')
 class ComponentAPIByID(Resource):
 
     def get(self, root_public_id: str = "Public Id del componente root",
@@ -36,7 +36,7 @@ class ComponentAPIByID(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/<id_root>')
+@ns.route('/comp-root/<id_root>')
 class ComponentInternalInRootAPI(Resource):
     @api.expect(ser_from.internalcomponent)
     def post(self, id_root="Id del root"):
@@ -56,7 +56,7 @@ class ComponentInternalInRootAPI(Resource):
             return default_error_handler(e)
 
 
-@ns.route('/<id_root>/<id_internal>')
+@ns.route('/<id_internal>/comp-root/<id_root>')
 class ComponentInternalInInternalAPI(Resource):
     @api.expect(ser_from.internalcomponent)
     def post(self, id_root="Id del root", id_internal="Id del internal"):
@@ -79,7 +79,7 @@ class ComponentInternalInInternalAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/position/<id_root>/<id_internal>')
+@ns.route('/position/<id_internal>/comp-root/<id_root>')
 class ComponentAPI(Resource):
     @api.expect(ser_from.position)
     def put(self, id_root="Id del componente root", id_internal="Id del componente internal"):
@@ -102,7 +102,7 @@ class ComponentAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/new_leaf_component/<id_root>/<id_internal>')
+@ns.route('/<id_internal>/comp-root/<id_root>/comp-leaf')
 class ComponentLeafInInternalAPI(Resource):
     @api.expect(ser_from.componentleaf)
     def post(self, id_root="Id del root", id_internal="Id del componente internal"):

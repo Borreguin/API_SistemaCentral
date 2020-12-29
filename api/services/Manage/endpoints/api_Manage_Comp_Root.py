@@ -54,7 +54,7 @@ class ComponentAPI(Resource):
 
 
 
-@ns.route('/<string:root_block_id>/<string:leaf_block_id>')
+@ns.route('/<string:root_block_id>/block-leaf/<string:leaf_block_id>')
 class CompRootAPI(Resource):
     @api.expect(ser_from.rootcomponentname)
     def post(self, root_block_id, leaf_block_id):
@@ -83,7 +83,7 @@ class CompRootAPI(Resource):
 
 
 # EndPoints que utilizan la estructura general
-@ns.route('/<string:root_block_id>/<string:leaf_block_id>/<string:root_component_id>')
+@ns.route('/<string:root_component_id>/block-root/<string:root_block_id>/block-leaf/<string:leaf_block_id>')
 class CompRootAPI(Resource):
 
     def delete(self, root_block_id: str, leaf_block_id: str, root_component_id: str):
@@ -115,7 +115,7 @@ class CompRootAPI(Resource):
 
     @api.expect(ser_from.rootcomponentname)
     def put(self, root_block_id: str, leaf_block_id: str, root_component_id: str):
-        """ Edita un componente root de la Base de Datos usando su public_id"""
+        """ Edita un componente root mediante: id del bloque root, id del bloque leaf e id del componente"""
         try:
             # Buscando Bloque root y Bloque Leaf asociado
             root_block_db = BloqueRoot.objects(public_id=root_block_id).first()
