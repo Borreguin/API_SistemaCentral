@@ -9,38 +9,36 @@ from dto.mongo_engine_handler import log
 from mongoengine import *
 import datetime as dt
 import uuid
-
-from dto.mongo_engine_handler.Consignment import *
 from settings import initial_settings as init
+from dto.mongo_engine_handler.Comp_Leaf import *
 
 
-class ComponenteLeaf(EmbeddedDocument):
-    public_id = StringField(required=True, default=None)
-    name = StringField(required=True)
-    source = StringField(choices=tuple(init.AVAILABLE_SOURCES))
+class Operations(EmbeddedDocument):
+    calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
     updated = DateTimeField(default=dt.datetime.now())
-    position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
-    consignments = ReferenceField(Consignments, dbref=True)
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
-        if self.public_id is None:
-            self.public_id = str(uuid.uuid4())
-        #consignments = Consignments.objects(id_elemento=self.public_id).first()
-        if self.source is None:
-            self.source = init.AVAILABLE_SOURCES[0]
-        # if consignments is None:
-        #     # if there are not consignments then create a new document
-        #     consignments = Consignments(id_elemento=self.public_id,
-        #                                   elemento=self.to_dict()).save()
-        #     # relate an existing consignacion
-        # self.consignments = consignments
+        if self.calculation_type is None:
+            self.calculation_type = init.AVAILABLE_OPERATIONS[0]
+
+    def parallel(self,inputs:list):
+        check=[float(i) for i in inputs]
+        if check:
+            aux=1
+            result=0
+            for r in inputs:
+                q=1-r
+                result=result+(aux*q)
+                aux=q
+            return result
+
 
 
     def edit_leaf_component(self, new_internal: dict):
         try:
 
-            to_update = ["name", "calculation_type"]
+            to_update = ["nombre", "calculation_type"]
             for key, value in new_internal.items():
                 if key in to_update:
                     setattr(self, key, value)
@@ -69,10 +67,3 @@ class ComponenteLeaf(EmbeddedDocument):
 
     def to_dict(self):
         return dict(public_id=self.public_id, name=self.name, source=self.source, position_x_y=self.position_x_y)
-
-    def get_consignments(self):
-        try:
-            return Consignments.objects(id=self.consignments.id).first()
-        except Exception as e:
-            print(str(e))
-            return None
