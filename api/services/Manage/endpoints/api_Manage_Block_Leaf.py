@@ -19,7 +19,7 @@ ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
 
-@ns.route('/position/<id_root>/<id_leaf>')
+@ns.route('/position/<id_leaf>/block-root/<id_root>')
 class BloqueAPI(Resource):
     @api.expect(ser_from.position)
     def put(self, id_root="Id del componente root", id_leaf="Id del componente leaf"):
@@ -39,7 +39,7 @@ class BloqueAPI(Resource):
             return default_error_handler(e)
 
 
-@ns.route('/<string:block_public_id>/leaf/<string:leaf_public_id>')
+@ns.route('/<string:leaf_public_id>/block-root/<string:block_public_id>')
 class BlocLeafByID(Resource):
 
     def get(self, block_public_id: str = "Public Id del bloque root",
@@ -95,7 +95,7 @@ class BlocLeafByID(Resource):
             return default_error_handler(e)
 
 
-@ns.route('/<string:public_id>/leaf')
+@ns.route('/block-root/<string:public_id>')
 class Block_leafAPI(Resource):
     @api.expect(ser_from.blockroot)
     def post(self, public_id: str = "Public Id del bloque root"):
