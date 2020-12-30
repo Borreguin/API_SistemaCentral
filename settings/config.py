@@ -33,6 +33,8 @@ config["TEMP_REPO"] = "temp"
 config["LOG_REPO"]="logs"
 # TODO: Redireccionar a una carpeta única
 config["DB_REPO"] = "_db"
+# REPOSITORIO CONSIGNACIONES
+config["CONSIGNACIONES"] = "_db\\consignaciones"
 
 config["SUPPORTED_FORMAT_DATES"] = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d", "%Y-%m-%d %H:%M:%S.%f"]
 config["DEFAULT_DATE_FORMAT"] = "%Y-%m-%d %H:%M:%S"
@@ -40,3 +42,4 @@ config["DEFAULT_DATE_FORMAT"] = "%Y-%m-%d %H:%M:%S"
 #CALCULOS DISPONIBLES
 config["AVAILABLE_OPERATIONS"] = ["LEAF", "ROOT", "PARALELO", "SERIE", "PONDERADO", "PROMEDIO", "OTROS"]
 config["AVAILABLE_SOURCES"] = [None, "MANUAL", "CÁLCULO", "PISERVER", "OTROS"]
+
