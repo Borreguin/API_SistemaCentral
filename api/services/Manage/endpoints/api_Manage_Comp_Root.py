@@ -54,7 +54,7 @@ class ComponentAPI(Resource):
 
 
 
-@ns.route('/<string:root_block_id>/block-leaf/<string:leaf_block_id>')
+@ns.route('/block-root/<string:root_block_id>/block-leaf/<string:leaf_block_id>')
 class CompRootAPI(Resource):
     @api.expect(ser_from.rootcomponentname)
     def post(self, root_block_id, leaf_block_id):
@@ -83,7 +83,7 @@ class CompRootAPI(Resource):
 
 
 # EndPoints que utilizan la estructura general
-@ns.route('/<string:root_component_id>/block-root/<string:root_block_id>/block-leaf/<string:leaf_block_id>')
+@ns.route('/block-root/<string:root_block_id>/block-leaf/<string:leaf_block_id>/comp-root/<string:root_component_id>')
 class CompRootAPI(Resource):
 
     def delete(self, root_block_id: str, leaf_block_id: str, root_component_id: str):
@@ -148,7 +148,7 @@ class CompRootAPI(Resource):
             return default_error_handler(e)
           
 
-@ns.route('/position/<id_root>')
+@ns.route('/<id_root>/position')
 class ComponentPositionAPI(Resource):
     @api.expect(ser_from.position)
     def put(self, id_root="Id del componente root"):
