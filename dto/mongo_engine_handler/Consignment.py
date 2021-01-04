@@ -20,7 +20,7 @@ import datetime as dt
 import os
 from settings.config import config as config
 from settings import initial_settings as init
-
+from shutil import rmtree
 
 class Consignment(EmbeddedDocument):
     no_consignacion = StringField(required=True)
@@ -122,6 +122,13 @@ class Consignments(Document):
         new_consignaciones = [c for c in self.consignaciones if c.no_consignacion != no_consignacion]
         if len(new_consignaciones) == len(self.consignaciones):
             return False, f"No existe la consignación [{no_consignacion}] en elemento [{self.id_elemento}]"
+        for consignment in self.consignaciones:
+            if consignment.no_consignacion==no_consignacion:
+                this_repo = os.path.join(init.CONS_REPO, consignment.id_consignacion)
+                if os.path.exists(this_repo):
+                    rmtree(this_repo)
+                else:
+                    continue
         self.consignaciones = new_consignaciones
         return True, f"Consignación [{no_consignacion}] ha sido eliminada"
 

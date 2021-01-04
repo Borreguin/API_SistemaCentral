@@ -95,10 +95,15 @@ def test_path():
     new_leaf_component.consignments = consignaciones
     new_component.save()
 
+    success_del,msg =consignaciones.delete_consignment(consignacion.no_consignacion)
+    print(msg)
+    consignaciones.save()
+    new_component.save()
+
     disconnect()
     return True
 
 
 if __name__ == "__main__":
-    #test_path()
-    test()
+    test_path()
+    #test()
