@@ -21,7 +21,7 @@ ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
 
-@ns.route('/<string:leaf_public_id>/comp-root/<string:root_public_id>')
+@ns.route('/comp-root/<string:root_public_id>/comp-leaf/<string:leaf_public_id>')
 class CompLeafByID(Resource):
 
     @api.expect(ser_from.componentleaf)
@@ -44,7 +44,7 @@ class CompLeafByID(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/position/<id_leaf>/comp-root/<id_root>')
+@ns.route('/comp-root/<id_root>/comp-leaf/<id_leaf>/position')
 class ComponentAPI(Resource):
     @api.expect(ser_from.position)
     def put(self, id_root="Id del componente root", id_leaf="Id del componente leaf"):
