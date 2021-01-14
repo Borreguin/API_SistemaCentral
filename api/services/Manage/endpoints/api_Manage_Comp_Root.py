@@ -21,13 +21,13 @@ ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
 
-@ns.route('/<string:public_id>')
+@ns.route('/<string:cmp_root_id>')
 class ComponentAPIByID(Resource):
 
-    def get(self, public_id: str = "Public Id del componente root"):
-        """ Obtener el componente root mediante su public_id """
+    def get(self, cmp_root_id: str = "Public Id del componente root"):
+        """ Obtener el componente root mediante su cmp_root_id """
         try:
-            componente  = ComponenteRoot.objects(public_id=public_id).first()
+            componente  = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if componente is None:
                 return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
             return dict(success=True, componente=componente.to_dict(),msg=f"{componente} fue encontrado", ), 200
@@ -54,18 +54,18 @@ class ComponentAPI(Resource):
 
 
 
-@ns.route('/block-root/<string:root_block_id>/block-leaf/<string:leaf_block_id>')
+@ns.route('/block-root/<string:blk_root_id>/block-leaf/<string:blk_leaf_id>')
 class CompRootAPI(Resource):
     @api.expect(ser_from.rootcomponentname)
-    def post(self, root_block_id, leaf_block_id):
+    def post(self, blk_root_id, blk_leaf_id):
         """ Crea un nuevo componente root """
         try:
             # Buscando Bloque root y Bloque Leaf asociado
-            root_block_db = BloqueRoot.objects(public_id=root_block_id).first()
+            root_block_db = BloqueRoot.objects(public_id=blk_root_id).first()
             if root_block_db is None:
                 return dict(success=False, rootcomponent=None,
                             msg="No existe un bloque general asociado a este id"), 404
-            success, leaf_block_db = root_block_db.search_leaf_by_id(leaf_block_id)
+            success, leaf_block_db = root_block_db.search_leaf_by_id(blk_leaf_id)
             if not success:
                 return dict(success=False, rootcomponent=None,
                             msg="No existe un bloque interno asociado a este id"), 404
@@ -83,27 +83,27 @@ class CompRootAPI(Resource):
 
 
 # EndPoints que utilizan la estructura general
-@ns.route('/block-root/<string:root_block_id>/block-leaf/<string:leaf_block_id>/comp-root/<string:root_component_id>')
+@ns.route('/block-root/<string:blk_root_id>/block-leaf/<string:blk_leaf_id>/comp-root/<string:cmp_root_id>')
 class CompRootAPI(Resource):
 
-    def delete(self, root_block_id: str, leaf_block_id: str, root_component_id: str):
+    def delete(self, blk_root_id: str, blk_leaf_id: str, cmp_root_id: str):
         """ Elimina un componente root mediante: id del bloque root, id del bloque leaf e id del componente """
         try:
             # Buscando Bloque root y Bloque Leaf asociado
-            root_block_db = BloqueRoot.objects(public_id=root_block_id).first()
+            root_block_db = BloqueRoot.objects(public_id=blk_root_id).first()
             if root_block_db is None:
                 return dict(success=False, bloqueroot=None,
                             msg="No existe un bloque general asociado a este id"), 404
-            root_component_db = ComponenteRoot.objects(public_id=root_component_id).first()
+            root_component_db = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if root_component_db is None:
                 return dict(success=False, bloqueroot=None,
                             msg="No existe el componente asociado a este id"), 404
-            success, leaf_block_db = root_block_db.search_leaf_by_id(leaf_block_id)
+            success, leaf_block_db = root_block_db.search_leaf_by_id(blk_leaf_id)
             if not success:
                 return dict(success=False, bloqueroot=None,
                             msg="No existe un bloque interno asociado a este id"), 404
 
-            success, msg = leaf_block_db.delete_root_component_by_id(root_component_id)
+            success, msg = leaf_block_db.delete_root_component_by_id(cmp_root_id)
             if success:
                 root_component_db.delete()
                 root_block_db.save()
@@ -114,24 +114,24 @@ class CompRootAPI(Resource):
             return default_error_handler(e)
 
     @api.expect(ser_from.rootcomponentname)
-    def put(self, root_block_id: str, leaf_block_id: str, root_component_id: str):
+    def put(self, blk_root_id: str, blk_leaf_id: str, cmp_root_id: str):
         """ Edita un componente root mediante: id del bloque root, id del bloque leaf e id del componente"""
         try:
             # Buscando Bloque root y Bloque Leaf asociado
-            root_block_db = BloqueRoot.objects(public_id=root_block_id).first()
+            root_block_db = BloqueRoot.objects(public_id=blk_root_id).first()
             if root_block_db is None:
                 return dict(success=False, bloqueroot=None,
                             msg="No existe un bloque general asociado a este id"), 404
 
             # Buscando el Bloque leaf asociado
-            success, leaf_block_db = root_block_db.search_leaf_by_id(leaf_block_id)
+            success, leaf_block_db = root_block_db.search_leaf_by_id(blk_leaf_id)
             if not success:
                 return dict(success=False, bloqueroot=None,
                             msg="No existe un bloque interno asociado a este id"), 404
             # Editando el componente root:
             edited_component = request.get_json()
             edited_component["block"] = leaf_block_db.name
-            root_component_db = ComponenteRoot.objects(public_id=root_component_id).first()
+            root_component_db = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if root_component_db is None:
                 return dict(success=False, bloqueroot=None,
                             msg="No existe componente root asociados a este public id"), 404
@@ -141,26 +141,26 @@ class CompRootAPI(Resource):
             success, msg = root_component_db.edit_root_component(edited_component)
             if success:
                 root_component_db.save()
-                root_block_db = BloqueRoot.objects(public_id=root_block_id).first()
+                root_block_db = BloqueRoot.objects(public_id=blk_root_id).first()
             return dict(success=success, bloqueroot=root_block_db.to_dict(),
                         msg=msg), 200 if success else 409
         except Exception as e:
             return default_error_handler(e)
           
 
-@ns.route('/<id_root>/position')
+@ns.route('/<string:cmp_root_id>/position')
 class ComponentPositionAPI(Resource):
     @api.expect(ser_from.position)
-    def put(self, id_root="Id del componente root"):
+    def put(self, cmp_root_id="Id del componente root"):
         """ Actualiza la posición x e y """
         try:
             data = request.get_json()
             pos_x = data["pos_x"]
             pos_y = data["pos_y"]
-            component_root_db = ComponenteRoot.objects(public_id=id_root).first()
+            component_root_db = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if component_root_db is None:
                 return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente root asociado a la id {id_root}")
+                            msg=f"No existe el componente root asociado a la id {cmp_root_id}")
             component_root_db.update_position_x_y(pos_x, pos_y)
             component_root_db.save()
             return dict(success=True, component_root=component_root_db.to_dict(), msg="Se actualizó position (x, y)")

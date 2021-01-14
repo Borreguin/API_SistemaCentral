@@ -58,6 +58,8 @@ from api.services.Manage.endpoints.api_Manage_Comp_Internal import ns as namespa
 from api.services.Manage.endpoints.api_Manage_Comp_Leaf import ns as namespace_Comp_Leaf
 from api.services.Manage.endpoints.api_Manage_Block_Leaf import ns as namespace_Block_Leaf
 from api.services.Manage.endpoints.api_Manage_Block_Root import ns as namespace_Block_Root
+from api.services.Consignaciones.endpoints.api_Consignaciones import ns as namespace_Consignaciones
+#from api.services.Consignaciones.endpoints.api_Consignaciones import ns as namespace_Consignaciones
 
 """ global variables """
 log = init.LogDefaultConfig("app_flask.log").logger
