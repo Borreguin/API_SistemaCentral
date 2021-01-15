@@ -39,6 +39,7 @@ def adding_end_points(blueprint, app):
     api_p.add_namespace(namespace_Comp_Internal)
     api_p.add_namespace(namespace_Block_Leaf)
     api_p.add_namespace(namespace_Block_Root)
+    api_p.add_namespace(namespace_Consignaciones)
 
     # registrando las rutas:
     app.register_blueprint(blueprint)

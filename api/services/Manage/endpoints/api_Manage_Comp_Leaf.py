@@ -14,6 +14,7 @@ from dto.mongo_engine_handler.Comp_Internal import *
 from dto.mongo_engine_handler.Comp_Leaf import *
 from dto.mongo_engine_handler.Comp_Root import *
 
+
 # creating this endpoint
 ns = api.namespace('component-leaf', description='Administración de componentes Leaf')
 ser_from = srl.Serializers(api)
@@ -44,7 +45,6 @@ class CompLeafByID(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-
 @ns.route('/comp-root/<string:cmp_root_id>/comp-leaf/<string:cmp_leaf_id>/position')
 class ComponentAPI(Resource):
     @api.expect(ser_from.position)
@@ -68,34 +68,3 @@ class ComponentAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-
-@ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>')
-class ComponentAPI(Resource):
-    @api.expect(ser_from.componentleaf)
-    def post(self, cmp_root_id="Id del componente root", cmp_intr_id="Id del componente interno"):
-        """ Crea un componente leaf dentro de un componente interno """
-        try:
-            data = request.get_json()
-            component_root_db = ComponenteRoot.objects(public_id=cmp_root_id).first()
-            if component_root_db is None:
-                return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente root asociado a la id {cmp_root_id}")
-
-            success, component_internal = component_root_db.search_internal_by_id(cmp_intr_id)
-            if not success:
-                return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente interno asociado a la id {cmp_intr_id}")
-
-            pos_x, pos_y = data.pop("pos_x", None), data.pop("pos_x", None)
-            new_leaf_component = ComponenteLeaf(**data)
-            if pos_x is not None and pos_y is not None:
-                new_leaf_component.update_position_x_y(pos_x, pos_y)
-            success, msg = component_internal.add_leaf_component([new_leaf_component])
-            if success:
-                component_root_db.save()
-            return dict(success=success,
-                        component_leaf=new_leaf_component.to_dict() if success else None,
-                        msg=msg), 200 if success else 409
-
-        except Exception as e:
-            return default_error_handler(e)

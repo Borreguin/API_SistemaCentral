@@ -5,7 +5,6 @@
 
 # General imports:
 from api import *
-
 # import custom configuration:
 from flask_mongoengine import MongoEngine
 

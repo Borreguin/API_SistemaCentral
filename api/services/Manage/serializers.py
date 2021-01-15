@@ -44,9 +44,7 @@ class Serializers:
 
         """ serializador para componente leaf """
         self.componentleaf = api.model("componentleaf", {
-            "name": fields.String(required=True, description="nombre del componente leaf"),
-            "pos_x": fields.Float(required=False, description="La posición x"),
-            "pos_y": fields.Float(required=False, description="La posición y")
+            "name": fields.String(required=True, description="nombre del componente leaf")
         })
 
         """ serializador para actualización de posición """

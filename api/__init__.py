@@ -23,6 +23,3 @@ app = create_app()
 
 """ global variables """
 log = init.LogDefaultConfig("app_flask.log").logger
-
-""" Note: import the models that migrate will track changes therefore don´t delete the next line """
-# from dto.sqlite_engine_handler import Users, Groups, Roles, Resources

@@ -1,12 +1,16 @@
 # This script implements the User Management CRUD actions: Create, Update, Delete
-from flask import request
+from flask_login import login_required, current_user
 from flask_restplus import Resource
-
-from dto.mongo_engine_handler.Comp_Root import *
+from flask import request, make_response
 # importando configuraciones desde modulo de inicio (__init__.py)
 from . import api
 from . import default_error_handler
 from . import serializers as srl
+from . import parsers
+from . import log
+from dto.mongo_engine_handler.Comp_Internal import *
+from dto.mongo_engine_handler.Comp_Leaf import *
+from dto.mongo_engine_handler.Comp_Root import *
 
 # creating this endpoint
 ns = api.namespace('component-internal', description='Administración de componentes internal')
@@ -30,7 +34,6 @@ class ComponentAPIByID(Resource):
             return dict(success=True, componente=result.to_dict(), msg=f"{result} fue encontrado", ), 200
         except Exception as e:
             return default_error_handler(e)
-
 
 @ns.route('/comp-root/<string:cmp_root_id>')
 class ComponentInternalInRootAPI(Resource):
@@ -75,7 +78,6 @@ class ComponentInternalInInternalAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-
 @ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>/position')
 class ComponentAPI(Resource):
     @api.expect(ser_from.position)
@@ -98,7 +100,6 @@ class ComponentAPI(Resource):
             return dict(success=True, component_internal=result.to_dict(), msg="Se actualizó position (x, y)")
         except Exception as e:
             return default_error_handler(e)
-
 
 @ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>/comp-leaf')
 class ComponentLeafInInternalAPI(Resource):
