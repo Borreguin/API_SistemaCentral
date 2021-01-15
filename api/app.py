@@ -1,48 +1,11 @@
 """"
-      Created by Roberto Sánchez A.
-      API de Autentificación de usuarios
-      Servicios:
-        - Creación, edición, eliminación de usuarios
-        - Creación, edición, eliminación de grupos
-        - Creación, edición, eliminación de recursos
-        - Manejo de Roles
-
-The auth workflow works as follows:
-
-    Client provides email and password, which is sent to the server
-    Server then verifies that email and password are correct and responds with an auth token
-    Client stores the token and sends it along with all subsequent requests to the API
-    Server decodes the token and validates it
-This cycle repeats until the token expires or is revoked. In the latter case, the server issues a new token.
-
-If the auth_token is valid, we get the user id from the sub index of the payload.
-If invalid, there could be two exceptions:
-    1. Expired Signature: When the token is used after it’s expired, it throws a ExpiredSignatureError exception.
-        This means the time specified in the payload’s exp field has expired.
-    2. Invalid Token: When the token supplied is not correct or malformed, then an InvalidTokenError exception is raised.
-
+    Created by Roberto Sánchez A.
+    API Sistema Central
 
 
 """
-import json
-
-""" General imports """
-import os
-import sys
-import copy
-from flask import Blueprint, render_template, redirect, url_for
-from flask import send_from_directory, request, make_response
-from flask_login import login_required, current_user
-import datetime as dt
+from api import *
 from waitress import serve
-
-
-# añadiendo a sys el path del proyecto:
-# permitiendo el uso de librerías propias:
-api_path = os.path.dirname(os.path.abspath(__file__))
-project_path = os.path.dirname(api_path)
-sys.path.append(api_path)
-sys.path.append(project_path)
 
 # import the general configuration of this API:
 # Custom import
@@ -58,9 +21,6 @@ from api.services.Manage.endpoints.api_Manage_Comp_Internal import ns as namespa
 from api.services.Manage.endpoints.api_Manage_Comp_Leaf import ns as namespace_Comp_Leaf
 from api.services.Manage.endpoints.api_Manage_Block_Leaf import ns as namespace_Block_Leaf
 from api.services.Manage.endpoints.api_Manage_Block_Root import ns as namespace_Block_Root
-
-""" global variables """
-log = init.LogDefaultConfig("app_flask.log").logger
 
 
 def adding_end_points(blueprint, app):

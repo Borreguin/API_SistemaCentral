@@ -165,4 +165,5 @@ class Consignments(Document):
             return False, msg
 
     def __str__(self):
-        return f"{self.id_elemento}: ({self.consignacion_reciente}) [{len(self.consignaciones)}]"
+        return f"{self.id_elemento}: [last: {self.consignacion_reciente}] " \
+               f" Total: {len(self.consignaciones)}"

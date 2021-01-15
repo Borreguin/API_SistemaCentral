@@ -4,17 +4,12 @@
 # Septiembre 2020
 
 # General imports:
-import datetime as dt
-from flask import Flask
-from flask import request
+from api import *
 
 # import custom configuration:
 from flask_mongoengine import MongoEngine
 
 from settings import initial_settings as init
-
-# log events:
-log = init.LogDefaultConfig("app_activity.log").logger  # Logger
 
 
 # DataBase SQLite Configuration
