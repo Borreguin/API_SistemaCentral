@@ -1,17 +1,12 @@
 # This script implements the User Management CRUD actions: Create, Update, Delete
-from flask_login import login_required, current_user
+from flask import request
 from flask_restplus import Resource
-from flask import request,  make_response
+
 # importando configuraciones desde modulo de inicio (__init__.py)
 from dto.mongo_engine_handler.Block_Root import BloqueRoot, BloqueLeaf
 from . import api
 from . import default_error_handler
 from . import serializers as srl
-from . import parsers
-from . import log
-from dto.mongo_engine_handler.Comp_Internal import *
-from dto.mongo_engine_handler.Comp_Leaf import *
-from dto.mongo_engine_handler.Comp_Root import *
 
 # creating this endpoint
 ns = api.namespace('block-leaf', description='Administración de bloque Leaf')

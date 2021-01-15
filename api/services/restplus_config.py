@@ -5,17 +5,17 @@
         Logger to save all the problems in the API
         Error handler in case is needed
 """
-import json
-import traceback
-from flask import request
 import datetime as dt
+import traceback
+
+from flask import request
 from flask_restplus import Api
 from sqlalchemy.orm.exc import NoResultFound
+
 from settings.initial_settings import LogDefaultConfig
 
 """ DB config"""
 # dup_key_error = "duplicate key error"
-import re
 
 api_log = LogDefaultConfig("api_services.log").logger
 

@@ -1,17 +1,12 @@
 # This script implements the User Management CRUD actions: Create, Update, Delete
-from flask_login import login_required, current_user
+from flask import request
 from flask_restplus import Resource
-from flask import request,  make_response
+
+from dto.mongo_engine_handler.Comp_Root import *
 # importando configuraciones desde modulo de inicio (__init__.py)
 from . import api
 from . import default_error_handler
 from . import serializers as srl
-from . import parsers
-from . import log
-from dto.mongo_engine_handler.Comp_Internal import *
-from dto.mongo_engine_handler.Comp_Leaf import *
-from dto.mongo_engine_handler.Comp_Root import *
-
 
 # creating this endpoint
 ns = api.namespace('component-internal', description='Administración de componentes internal')
@@ -29,12 +24,13 @@ class ComponentAPIByID(Resource):
             componente_root = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if componente_root is None:
                 return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
-            Success,result = componente_root.search_internal_by_id(cmp_intr_id)
+            Success, result = componente_root.search_internal_by_id(cmp_intr_id)
             if not Success:
                 return dict(success=False, msg="No existen componentes internal asociados a este Public Id"), 404
-            return dict(success=True, componente=result.to_dict(),msg=f"{result} fue encontrado", ), 200
+            return dict(success=True, componente=result.to_dict(), msg=f"{result} fue encontrado", ), 200
         except Exception as e:
             return default_error_handler(e)
+
 
 @ns.route('/comp-root/<string:cmp_root_id>')
 class ComponentInternalInRootAPI(Resource):
@@ -79,6 +75,7 @@ class ComponentInternalInInternalAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
+
 @ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>/position')
 class ComponentAPI(Resource):
     @api.expect(ser_from.position)
@@ -102,6 +99,7 @@ class ComponentAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
+
 @ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>/comp-leaf')
 class ComponentLeafInInternalAPI(Resource):
     @api.expect(ser_from.componentleaf)
@@ -112,8 +110,9 @@ class ComponentLeafInInternalAPI(Resource):
             component_leaf = ComponenteLeaf(**data)
             component_root = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if component_root is None:
-                return dict(success=False, component_root=None, msg=f'El componente root asociado a {cmp_root_id} no existe'), 409
-            success, component_internal=component_root.search_internal_by_id(cmp_intr_id)
+                return dict(success=False, component_root=None,
+                            msg=f'El componente root asociado a {cmp_root_id} no existe'), 409
+            success, component_internal = component_root.search_internal_by_id(cmp_intr_id)
             if not success:
                 return dict(succes=False, component_root=None, msg=component_internal), 409
             success, message = component_internal.add_leaf_component([component_leaf])
