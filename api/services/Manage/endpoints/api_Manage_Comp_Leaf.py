@@ -21,19 +21,19 @@ ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
 
-@ns.route('/comp-root/<string:root_public_id>/comp-leaf/<string:leaf_public_id>')
+@ns.route('/comp-root/<string:cmp_root_id>/comp-leaf/<string:cmp_leaf_id>')
 class CompLeafByID(Resource):
 
     @api.expect(ser_from.componentleaf)
-    def put(self, root_public_id: str = "Public Id del componente root",
-            leaf_public_id: str = "Public Id del componente leaf"):
+    def put(self, cmp_root_id: str = "Public Id del componente root",
+            cmp_leaf_id: str = "Public Id del componente leaf"):
         """ Edita un componente leaf de la Base de Datos usando su public_id y public_id del componente root"""
         try:
             edited_component = request.get_json()
-            component_root = ComponenteRoot.objects(public_id=root_public_id).first()
+            component_root = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if component_root is None:
                 return dict(success=False, component_root=None, msg="No existen componentes root asociados a este Public Id"), 404
-            success, component_leaf=component_root.search_leaf_by_id(leaf_public_id)
+            success, component_leaf=component_root.search_leaf_by_id(cmp_leaf_id)
             if not success:
                 return dict(success=False, component_root=None, msg=component_leaf), 409
             success, message=component_leaf.edit_leaf_component(edited_component)
@@ -44,23 +44,23 @@ class CompLeafByID(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/comp-root/<id_root>/comp-leaf/<id_leaf>/position')
+@ns.route('/comp-root/<string:cmp_root_id>/comp-leaf/<string:cmp_leaf_id>/position')
 class ComponentAPI(Resource):
     @api.expect(ser_from.position)
-    def put(self, id_root="Id del componente root", id_leaf="Id del componente leaf"):
+    def put(self, cmp_root_id="Id del componente root", cmp_leaf_id="Id del componente leaf"):
         """ Actualiza la posición x e y """
         try:
             data = request.get_json()
             pos_x = data["pos_x"]
             pos_y = data["pos_y"]
-            component_root_db = ComponenteRoot.objects(public_id=id_root).first()
+            component_root_db = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if component_root_db is None:
                 return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente root asociado a la id {id_root}")
-            success, result = component_root_db.search_leaf_by_id(id_leaf)
+                            msg=f"No existe el componente root asociado a la id {cmp_root_id}")
+            success, result = component_root_db.search_leaf_by_id(cmp_leaf_id)
             if not success:
                 return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente leaf asociado a la id {id_leaf}")
+                            msg=f"No existe el componente leaf asociado a la id {cmp_leaf_id}")
             result.update_position_x_y(pos_x, pos_y)
             component_root_db.save()
             return dict(success=True, component_leaf=result.to_dict(), msg="Se actualizó position (x, y)")

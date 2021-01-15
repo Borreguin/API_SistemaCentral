@@ -10,7 +10,8 @@ from settings import initial_settings as init
 DEBUG = True
 
 d_n = dt.datetime.now()
-ini_date = dt.datetime(year=d_n.year, month=d_n.month, day=1) - dt.timedelta(days=30)
+
+ini_date = dt.datetime(year=d_n.year, month=d_n.month, day=1)- dt.timedelta(days=30)
 end_date = dt.datetime(year=d_n.year, month=d_n.month, day=d_n.day) - dt.timedelta(days=d_n.day)
 t_delta = end_date - ini_date
 n_minutos_evaluate = t_delta.days * (60 * 24) + t_delta.seconds // 60 + t_delta.seconds % 60
@@ -129,7 +130,7 @@ def test_path():
     new_leaf_component.consignments = consignaciones
     new_component.save()
 
-    success_del, msg = consignaciones.delete_consignment(consignacion.no_consignacion)
+    success_del,msg =consignaciones.delete_consignment_by_id(consignacion.no_consignacion)
     print(msg)
     consignaciones.save()
     new_component.save()
@@ -141,3 +142,4 @@ def test_path():
 if __name__ == "__main__":
     # test_path()
     test_leafs_and_consignments()
+

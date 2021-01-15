@@ -19,35 +19,35 @@ ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
 
-@ns.route('/comp-root/<string:root_public_id>/comp-internal/<string:internal_public_id>')
+@ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>')
 class ComponentAPIByID(Resource):
 
-    def get(self, root_public_id: str = "Public Id del componente root",
-            internal_public_id: str = "Public Id del componente internal"):
-        """ Obtener el componente internal mediante root_public_id e internal_public_id """
+    def get(self, cmp_root_id: str = "Public Id del componente root",
+            cmp_intr_id: str = "Public Id del componente internal"):
+        """ Obtener el componente internal mediante cmp_root_id e cmp_intr_id """
         try:
-            componente_root = ComponenteRoot.objects(public_id=root_public_id).first()
+            componente_root = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if componente_root is None:
                 return dict(success=False, msg="No existen componentes root asociados a este Public Id"), 404
-            Success,result = componente_root.search_internal_by_id(internal_public_id)
+            Success,result = componente_root.search_internal_by_id(cmp_intr_id)
             if not Success:
                 return dict(success=False, msg="No existen componentes internal asociados a este Public Id"), 404
             return dict(success=True, componente=result.to_dict(),msg=f"{result} fue encontrado", ), 200
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/comp-root/<id_root>')
+@ns.route('/comp-root/<string:cmp_root_id>')
 class ComponentInternalInRootAPI(Resource):
     @api.expect(ser_from.internalcomponent)
-    def post(self, id_root="Id del root"):
+    def post(self, cmp_root_id="Id del root"):
         """ Crea un nuevo componente internal dentro de un root """
         try:
             data = request.get_json()
             componente_internal = ComponenteInternal(**data)
-            componenterootdb = ComponenteRoot.objects(public_id=id_root).first()
+            componenterootdb = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if componenterootdb is None:
                 return dict(success=False, component_root=None,
-                            msg=f'El componente root asociado a {id_root} no existe'), 409
+                            msg=f'El componente root asociado a {cmp_root_id} no existe'), 409
             componenterootdb.add_internal_component([componente_internal])
             componenterootdb.save()
             return dict(success=True, component_root=componenterootdb.to_dict(),
@@ -56,22 +56,22 @@ class ComponentInternalInRootAPI(Resource):
             return default_error_handler(e)
 
 
-@ns.route('/comp-root/<id_root>/comp-internal/<id_internal>')
+@ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>')
 class ComponentInternalInInternalAPI(Resource):
     @api.expect(ser_from.internalcomponent)
-    def post(self, id_root="Id del root", id_internal="Id del internal"):
+    def post(self, cmp_root_id="Id del root", cmp_intr_id="Id del internal"):
         """ Crea un nuevo componente internal dentro de un internal """
         try:
             data = request.get_json()
             componenteinternal = ComponenteInternal(**data)
-            componenterootdb = ComponenteRoot.objects(public_id=id_root).first()
+            componenterootdb = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if componenterootdb is None:
                 return dict(success=False, component_root=None,
-                            msg=f'No existe el componente root asociado a {id_root}'), 404
-            success, result = componenterootdb.search_internal_by_id(id_internal)
+                            msg=f'No existe el componente root asociado a {cmp_root_id}'), 404
+            success, result = componenterootdb.search_internal_by_id(cmp_intr_id)
             if not success:
                 return dict(success=False, component_root=None,
-                            msg=f'No existe el componente internal asociado a {id_internal}'), 404
+                            msg=f'No existe el componente internal asociado a {cmp_intr_id}'), 404
             result.add_internal_component([componenteinternal])
             componenterootdb.save()
             return dict(success=True, component_root=componenterootdb.to_dict(),
@@ -79,41 +79,41 @@ class ComponentInternalInInternalAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/comp-root/<id_root>/comp-internal/<id_internal>/position')
+@ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>/position')
 class ComponentAPI(Resource):
     @api.expect(ser_from.position)
-    def put(self, id_root="Id del componente root", id_internal="Id del componente internal"):
+    def put(self, cmp_root_id="Id del componente root", cmp_intr_id="Id del componente internal"):
         """ Actualiza la posición x e y """
         try:
             data = request.get_json()
             pos_x = data["pos_x"]
             pos_y = data["pos_y"]
-            component_root_db = ComponenteRoot.objects(public_id=id_root).first()
+            component_root_db = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if component_root_db is None:
                 return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente root asociado a la id {id_root}")
-            success, result = component_root_db.search_internal_by_id(id_internal)
+                            msg=f"No existe el componente root asociado a la id {cmp_root_id}")
+            success, result = component_root_db.search_internal_by_id(cmp_intr_id)
             if not success:
                 return dict(success=False, component_internal=None,
-                            msg=f"No existe el componente internal asociado a la id {id_internal}")
+                            msg=f"No existe el componente internal asociado a la id {cmp_intr_id}")
             result.update_position_x_y(pos_x, pos_y)
             component_root_db.save()
             return dict(success=True, component_internal=result.to_dict(), msg="Se actualizó position (x, y)")
         except Exception as e:
             return default_error_handler(e)
 
-@ns.route('/comp-root/<id_root>/comp-internal/<id_internal>/comp-leaf')
+@ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>/comp-leaf')
 class ComponentLeafInInternalAPI(Resource):
     @api.expect(ser_from.componentleaf)
-    def post(self, id_root="Id del root", id_internal="Id del componente internal"):
+    def post(self, cmp_root_id="Id del root", cmp_intr_id="Id del componente internal"):
         """ Crea un nuevo componente leaf dentro de un internal """
         try:
             data = request.get_json()
             component_leaf = ComponenteLeaf(**data)
-            component_root = ComponenteRoot.objects(public_id=id_root).first()
+            component_root = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if component_root is None:
-                return dict(success=False, component_root=None, msg=f'El componente root asociado a {id_root} no existe'), 409
-            success, component_internal=component_root.search_internal_by_id(id_internal)
+                return dict(success=False, component_root=None, msg=f'El componente root asociado a {cmp_root_id} no existe'), 409
+            success, component_internal=component_root.search_internal_by_id(cmp_intr_id)
             if not success:
                 return dict(succes=False, component_root=None, msg=component_internal), 409
             success, message = component_internal.add_leaf_component([component_leaf])
