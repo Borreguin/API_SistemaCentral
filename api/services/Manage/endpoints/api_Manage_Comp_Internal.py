@@ -101,11 +101,14 @@ class ComponentAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
+
+# TODO: Delete this function if is not used beacuse it was created in api_Management_Comp_Leaf
+"""
 @ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>/comp-leaf')
 class ComponentLeafInInternalAPI(Resource):
     @api.expect(ser_from.componentleaf)
     def post(self, cmp_root_id="Id del root", cmp_intr_id="Id del componente internal"):
-        """ Crea un nuevo componente leaf dentro de un internal """
+        # Crea un nuevo componente leaf dentro de un internal 
         try:
             data = request.get_json()
             component_leaf = ComponenteLeaf(**data)
@@ -123,3 +126,5 @@ class ComponentLeafInInternalAPI(Resource):
             return dict(success=False, component_root=None, msg=message), 409
         except Exception as e:
             return default_error_handler(e)
+            
+"""

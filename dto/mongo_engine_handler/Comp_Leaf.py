@@ -31,13 +31,17 @@ class ComponenteLeaf(EmbeddedDocument):
             self.source = init.AVAILABLE_SOURCES[0]
 
     def create_consignments_container(self):
-        if self.consignments is None:
-            # if there are not consignments then create a new document
-            # relate an existing consignacion
-            consignments = Consignments(id_elemento=self.public_id,
-                                        elemento=self.to_summary())
-            consignments.save()
-            self.consignments = consignments
+        try:
+            if self.consignments is None:
+                # if there are not consignments then create a new document
+                # relate an existing consignacion
+                consignments = Consignments(id_elemento=self.public_id,
+                                            elemento=self.to_summary())
+                consignments.save()
+                self.consignments = consignments
+                return True
+        except Exception as e:
+            return False
 
     def edit_leaf_component(self, new_internal: dict):
         try:
