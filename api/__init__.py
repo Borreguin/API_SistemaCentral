@@ -16,15 +16,9 @@ project_path = os.path.dirname(api_path)
 sys.path.append(api_path)
 sys.path.append(project_path)
 
-
 """ global variables """
 from settings import initial_settings as init
 log = init.LogDefaultConfig("app_flask.log").logger
 from api.app_config import create_app
 
 app = create_app()
-
-
-
-""" Note: import the models that migrate will track changes therefore don´t delete the next line """
-# from dto.sqlite_engine_handler import Users, Groups, Roles, Resources
