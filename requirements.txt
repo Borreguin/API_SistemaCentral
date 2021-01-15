@@ -19,3 +19,4 @@ scrapy>=2.3.0
 pysqlite3
 pyjwt==1.4.2
 flask_login
+pythonnet==2.3.0

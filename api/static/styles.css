@@ -1,0 +1,15 @@
+.footer{
+    clear: both;
+    position: fixed;
+    bottom: 0px;
+    height: auto;
+    width: auto;
+    right: 3px;
+    font-size: 10pt;
+    text-align: right;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: hsla(0,0%,100%,.692);
+    border-radius: 5px;
+    padding: 1px; !important
+}

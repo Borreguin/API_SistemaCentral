@@ -26,16 +26,18 @@ class ComponenteLeaf(EmbeddedDocument):
         super().__init__(*args, **values)
         if self.public_id is None:
             self.public_id = str(uuid.uuid4())
-        #consignments = Consignments.objects(id_elemento=self.public_id).first()
+        # consignments = Consignments.objects(id_elemento=self.public_id).first()
         if self.source is None:
             self.source = init.AVAILABLE_SOURCES[0]
-        # if consignments is None:
-        #     # if there are not consignments then create a new document
-        #     consignments = Consignments(id_elemento=self.public_id,
-        #                                   elemento=self.to_dict()).save()
-        #     # relate an existing consignacion
-        # self.consignments = consignments
 
+    def create_consignments_container(self):
+        if self.consignments is None:
+            # if there are not consignments then create a new document
+            # relate an existing consignacion
+            consignments = Consignments(id_elemento=self.public_id,
+                                        elemento=self.to_summary())
+            consignments.save()
+            self.consignments = consignments
 
     def edit_leaf_component(self, new_internal: dict):
         try:
@@ -69,6 +71,9 @@ class ComponenteLeaf(EmbeddedDocument):
 
     def to_dict(self):
         return dict(public_id=self.public_id, name=self.name, source=self.source, position_x_y=self.position_x_y)
+
+    def to_summary(self):
+        return dict(public_id=self.public_id, name=self.name)
 
     def get_consignments(self):
         try:

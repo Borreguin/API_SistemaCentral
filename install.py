@@ -10,6 +10,7 @@ def install_requirements():
     print(">>> Installing requirements for this API...")
     script_path = os.path.dirname(os.path.abspath(__file__))
     requirements_path = os.path.join(script_path, "requirements.txt")
+    print(requirements_path)
     try:
         sb.run(["pip", "install", "-r", requirements_path])
     except Exception as e:
