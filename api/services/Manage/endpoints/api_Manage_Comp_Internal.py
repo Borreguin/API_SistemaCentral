@@ -1,5 +1,5 @@
 # This script implements the User Management CRUD actions: Create, Update, Delete
-from flask_login import login_required, current_user
+# from flask_login import login_required, current_user
 from flask_restplus import Resource
 from flask import request, make_response
 # importando configuraciones desde modulo de inicio (__init__.py)
