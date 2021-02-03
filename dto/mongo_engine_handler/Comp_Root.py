@@ -200,7 +200,7 @@ class ComponenteRoot(Document):
         return False, f"No se encontró la hoja con el id {id_leaf}"
 
     def to_dict(self):
-        return dict(public_id=self.public_id, bloque=self.block, name=self.name,
+        return dict(document=self.document, public_id=self.public_id, bloque=self.block, name=self.name,
                     internals=[i.to_dict() for i in self.internals], position_x_y=self.position_x_y)
 
     def update_position_x_y(self, pos_x: float, pos_y: float):

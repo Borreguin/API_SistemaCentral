@@ -16,6 +16,7 @@ from settings import initial_settings as init
 
 class ComponenteLeaf(EmbeddedDocument):
     public_id = StringField(required=True, default=None)
+    document = StringField(required=False, default="ComponenteLeaf")
     name = StringField(required=True)
     source = StringField(choices=tuple(init.AVAILABLE_SOURCES))
     updated = DateTimeField(default=dt.datetime.now())

@@ -16,6 +16,7 @@ from dto.mongo_engine_handler.Comp_Leaf import *
 
 class ComponenteInternal(EmbeddedDocument):
     public_id = StringField(required=True, default=None)
+    document = StringField(required=False, default="ComponenteInternal")
     name = StringField(required=True)
     internals = EmbeddedDocumentListField('ComponenteInternal')
     leafs = ListField(EmbeddedDocumentField(ComponenteLeaf), required=True)

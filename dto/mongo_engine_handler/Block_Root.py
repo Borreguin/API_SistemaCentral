@@ -142,9 +142,7 @@ class BloqueRoot(Document):
         if len(new_block_leafs) == len(self.block_leafs):
             return False, f"No existe el bloque [{id_leaf}] en el bloque root [{self.name}]"
         self.block_leafs = new_block_leafs
-        if len(self.block_leafs) == 0:
-            new_block_leafs = BloqueLeaf(name=self.name, calculation_type="LEAF")
-            self.block_leafs = [new_block_leafs]
+        # Cuando se elimina un bloque interno, no importa si este queda vacío.
         return True, "Bloque leaf eliminado"
 
     # FUNCIONES SEARCH

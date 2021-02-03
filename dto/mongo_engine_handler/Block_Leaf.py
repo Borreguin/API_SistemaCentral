@@ -15,6 +15,7 @@ from dto.mongo_engine_handler.Comp_Root import *
 
 class BloqueLeaf(EmbeddedDocument):
     public_id = StringField(required=True, default=None)
+    document = StringField(required=False, default="BloqueLeaf")
     name = StringField(required=True, unique=False)
     calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
@@ -125,6 +126,6 @@ class BloqueLeaf(EmbeddedDocument):
         for comp in self.comp_roots:
             if hasattr(comp, "name"):
                 root_to_dict.append(comp.to_dict())
-        return dict(public_id=self.public_id, name=self.name, calculation_type=self.calculation_type,
-                    position_x_y=self.position_x_y,
-                    comp_roots=root_to_dict)
+        return dict(document=self.document, public_id=self.public_id, name=self.name,
+                    calculation_type=self.calculation_type,
+                    position_x_y=self.position_x_y, comp_roots=root_to_dict)
