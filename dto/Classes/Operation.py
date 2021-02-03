@@ -1,5 +1,5 @@
 """
-    clase Operation: permite estructurar un diccionario que contenga las operaciones arealizarse dentro
+    clase Operation: permite estructurar un diccionario que contenga las operaciones a realizarse dentro
     de un bloque/componente
 
     example:
