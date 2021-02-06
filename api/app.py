@@ -110,7 +110,7 @@ def main():
 
     # serve the application
     if init.FLASK_DEBUG:
-        app.run(debug=init.FLASK_DEBUG, port=5000)
+        app.run(debug=init.FLASK_DEBUG, port=init.DEBUG_PORT)
     else:
         serve(app, host='0.0.0.0', port=init.PORT)
 

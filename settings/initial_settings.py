@@ -35,12 +35,11 @@ else:
     FLASK_DEBUG = config["FLASK_DEBUG"]
     SECRET_KEY = "Th1$1$a$6creTK6y"
 
-
-
 """ API CONFIGURATION """
 if config["API_URL_PREFIX"] != "/":
     API_URL_PREFIX = "/" + config["API_URL_PREFIX"]
 PORT = config["PORT"]
+DEBUG_PORT = config["DEBUG_PORT"]
 
 """ Log file settings: """
 log_file = config["ROTATING_FILE_HANDLER"]["filename"]
@@ -75,14 +74,14 @@ if not os.path.exists(TEMP_PATH):
 TEMP_REPO = config["TEMP_REPO"]
 DB_REPO = config["DB_REPO"]
 LOG_REPO = config["LOG_REPO"]
-CONS_REPO=config["CONSIGNACIONES"]
+CONS_REPO = config["CONSIGNACIONES"]
 
 """CONFIGURACIÓN DE LA APLICACIÓN"""
-AVAILABLE_OPERATIONS=config["AVAILABLE_OPERATIONS"]
-AVAILABLE_SOURCES=config["AVAILABLE_SOURCES"]
+AVAILABLE_OPERATIONS = config["AVAILABLE_OPERATIONS"]
+AVAILABLE_SOURCES = config["AVAILABLE_SOURCES"]
 
 """ LISTA DE REPOSITORIOS """
-REPOS = [TEMP_REPO, DB_REPO, LOG_REPO,CONS_REPO]
+REPOS = [TEMP_REPO, DB_REPO, LOG_REPO, CONS_REPO]
 FINAL_REPO = list()
 for repo in REPOS:
     this_repo = os.path.join(project_path, repo)
@@ -91,7 +90,7 @@ for repo in REPOS:
     FINAL_REPO.append(this_repo)
 
 # getting the definitive path for each one in same order:
-TEMP_REPO, DB_REPO,LOG_REPO,CONS_REPO = FINAL_REPO
+TEMP_REPO, DB_REPO, LOG_REPO, CONS_REPO = FINAL_REPO
 
 
 # Default Class for Logging messages about this API

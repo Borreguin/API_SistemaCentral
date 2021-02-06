@@ -11,7 +11,6 @@ Consignación:
 
 """
 
-
 import hashlib
 import traceback
 import uuid
@@ -19,9 +18,9 @@ import uuid
 from mongoengine import *
 import datetime as dt
 import os
-from settings.config import config as config
 from settings import initial_settings as init
 from shutil import rmtree
+
 
 class Consignment(EmbeddedDocument):
     no_consignacion = StringField(required=True)
@@ -30,8 +29,8 @@ class Consignment(EmbeddedDocument):
     t_minutos = IntField(required=True)
     id_consignacion = StringField(default=None, required=True)
     detalle = DictField()
-    folder=StringField(default=None, required=False)
-    updated=DateTimeField(required=False, default=dt.datetime.now())
+    folder = StringField(default=None, required=False)
+    updated = DateTimeField(required=False, default=dt.datetime.now())
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
@@ -39,16 +38,15 @@ class Consignment(EmbeddedDocument):
             # print(self.no_consignacion)
             if self.no_consignacion is None:
                 return
-            id =  str(uuid.uuid4()) + str(self.fecha_inicio) + str(self.fecha_final)
+            id = str(uuid.uuid4()) + str(self.fecha_inicio) + str(self.fecha_final)
             self.id_consignacion = hashlib.md5(id.encode()).hexdigest()
         self.calculate()
-
 
     def create_folder(self):
         this_repo = os.path.join(init.CONS_REPO, self.id_consignacion)
         if not os.path.exists(this_repo):
             os.makedirs(this_repo)
-            self.folder=this_repo
+            self.folder = this_repo
             return True
         return False
 
@@ -75,7 +73,7 @@ class Consignment(EmbeddedDocument):
                     id_consignacion=self.id_consignacion,
                     detalle=self.detalle)
 
-    def edit(self, new_consignment:dict):
+    def edit(self, new_consignment: dict):
         try:
             to_update = ["no_consignacion", "fecha_inicio", "fecha_final", "detalle"]
             for key, value in new_consignment.items():
@@ -87,6 +85,7 @@ class Consignment(EmbeddedDocument):
             msg = f"Error al actualizar {self}: {str(e)}"
             tb = traceback.format_exc()  # Registra últimos pasos antes del error
             return False, msg
+
 
 class Consignments(Document):
     id_elemento = StringField(required=True, unique=True)
@@ -139,7 +138,7 @@ class Consignments(Document):
         if len(new_consignaciones) == len(self.consignaciones):
             return False, f"No existe la consignación [{id_consignacion}] en elemento [{self.id_elemento}]"
         for consignment in self.consignaciones:
-            if consignment.id_consignacion==id_consignacion:
+            if consignment.id_consignacion == id_consignacion:
                 if consignment.folder is not None and os.path.exists(consignment.folder):
                     rmtree(consignment.folder)
                 else:
@@ -161,10 +160,10 @@ class Consignments(Document):
         return False, None
 
     def edit_consignment_by_id(self, id_to_edit, consignment: Consignment):
-        found=False
+        found = False
         for consignacion in self.consignaciones:
-            if consignacion.id_consignacion==id_to_edit:
-                found=True
+            if consignacion.id_consignacion == id_to_edit:
+                found = True
                 consignacion.edit(consignment.to_dict())
                 break
         return found, f"La consignación {consignment.no_consignacion} ha sido editada correctamente" if found \

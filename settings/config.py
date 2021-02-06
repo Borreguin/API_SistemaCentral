@@ -1,11 +1,12 @@
 # API de Authentfication usando JWT
 # Configuraciones iniciales de la API
-
+import os
 config = dict()
 config["name"] = "API Sistema Central "
 config["API_URL_PREFIX"] = "api-sct"
 config["version"] = "1.0"
 config["PORT"] = 7821
+config["DEBUG_PORT"] = 5001
 config["FLASK_DEBUG"] = True
 
 config["RESTPLUS_SWAGGER_UI_DOC_EXPANSION"] = "list"
@@ -34,7 +35,7 @@ config["LOG_REPO"]="logs"
 # TODO: Redireccionar a una carpeta única
 config["DB_REPO"] = "_db"
 # REPOSITORIO CONSIGNACIONES
-config["CONSIGNACIONES"] = "_db\\consignaciones"
+config["CONSIGNACIONES"] = os.path.join(config["DB_REPO"], "consignaciones")
 
 config["SUPPORTED_FORMAT_DATES"] = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d", "%Y-%m-%d %H:%M:%S.%f"]
 config["DEFAULT_DATE_FORMAT"] = "%Y-%m-%d %H:%M:%S"
