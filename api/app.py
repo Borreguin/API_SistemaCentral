@@ -65,10 +65,11 @@ def adding_blueprint_routes(blueprint):
 
 
 def adding_app_routes(app):
-    # @app.route("/")
-    # def main_page():
-    #    """ Adding initial page """
-    #    return "This is home page for this API, check the pefix to see the UI"
+    @app.route("/")
+    def main_page():
+        """ Adding initial page """
+        return f"This is home page for this API, check the prefix to see the UI: {init.API_URL_PREFIX} " \
+               f"<br><br>Gerencia Nacional de Desarrollo Técnico - Enero 2021 - API Cálculo de disponibilidad de Sistema Central "
 
     @app.route('/favicon.ico')
     def favicon():

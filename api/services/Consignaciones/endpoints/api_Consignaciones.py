@@ -9,21 +9,20 @@
     "My work is well done to honor God at any time" R Sanchez A.
     Mateo 6:33
 """
-from flask_restplus import Resource
+import os
+
 from flask import request
-import re, os
-# importando configuraciones iniciales
-from dto.mongo_engine_handler.Consignment import Consignments, Consignment
-from settings import initial_settings as init
-from my_lib import utils as u
+from flask_restplus import Resource
+from api.services.Consignaciones import parsers
+from api.services.Consignaciones import serializers as srl
 from api.services.restplus_config import api
 from api.services.restplus_config import default_error_handler
-from api.services.Consignaciones import serializers as srl
-from api.services.Consignaciones import parsers
 # importando clases para leer desde MongoDB
-from dto.mongo_engine_handler.Comp_Leaf import *
-from random import randint
-import json
+# importando configuraciones iniciales
+from dto.mongo_engine_handler.Consignment import Consignments, Consignment
+from my_lib import utils as u
+from settings import initial_settings as init
+
 # configurando logger y el servicio web
 log = init.LogDefaultConfig("ws_Consignaciones.log").logger
 ns = api.namespace('admin-consignacion', description='Relativas a la administración de consignaciones')
@@ -61,7 +60,6 @@ class ConsignacionAPI(Resource):
             return default_error_handler(e)
 
     @api.expect(ser_from.detalle_consignacion)
-#    @api.expect(parsers.consignacion_upload)
     def post(self, id_elemento: str = "id_elemento", ini_date: str = "yyyy-mm-dd hh:mm:ss",
              end_date: str = "yyyy-mm-dd hh:mm:ss"):
         """ Consignar un elemento asociadas a: "id_elemento"
@@ -149,8 +147,6 @@ class ConsignacionDeleteEditAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
-#@ns.route('/consignacion/<string:id_elemento>/<string:id_consignacion>')
-    #class UploadConsignacionFile(Resource):
     @api.expect(parsers.consignacion_upload)
     def post(self, id_elemento: str = "id_elemento", id_consignacion: str = "id_consignacion"):
         """ Carga un archivo a la consignación asociada al elemento: "id_elemento", cuya idenficación es "id_consignacion"

@@ -40,6 +40,7 @@ if config["API_URL_PREFIX"] != "/":
     API_URL_PREFIX = "/" + config["API_URL_PREFIX"]
 PORT = config["PORT"]
 DEBUG_PORT = config["DEBUG_PORT"]
+VERSION = config["version"]
 
 """ Log file settings: """
 log_file = config["ROTATING_FILE_HANDLER"]["filename"]

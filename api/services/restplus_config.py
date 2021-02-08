@@ -11,7 +11,7 @@ from flask import request
 import datetime as dt
 from flask_restplus import Api
 from sqlalchemy.orm.exc import NoResultFound
-from settings.initial_settings import LogDefaultConfig
+from settings.initial_settings import LogDefaultConfig, VERSION
 
 """ DB config"""
 # dup_key_error = "duplicate key error"
@@ -19,7 +19,7 @@ import re
 
 api_log = LogDefaultConfig("api_services.log").logger
 
-api = Api(version='0.1', title='API SISTEMA CENTRAL',
+api = Api(version=VERSION, title='API SISTEMA CENTRAL',
           contact="Roberto Sánchez A, David Panchi, José Enríquez",
           contact_email="rg.sanchez.a@gmail.com, dpanchi@cenace.org.ec, jenriquez@cenace.org.ec",
           contact_url="https://github.com/Borreguin",
