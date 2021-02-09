@@ -17,20 +17,29 @@
 from settings import initial_settings as init
 
 
+
+
 class Operation:
+    # TOPOLOGIA: ESTRUCTURA DEL DICCIONARIO
+    # OPERATING_LIST: LISTA DE OPERANDOS EXISTENTES (Ej:[id_1,id_2,id_3,etc...])
+    # REGISTER_OPERATING: LISTA DE OPERANDOS REGISTRADOS EN TOPOLOGÍA
+    # ["AVAILABLE_OPERATIONS"] = ["LEAF", "ROOT", "PARALELO", "SERIE", "PONDERADO", "PROMEDIO", "OTROS"]
     topology = dict()
     operating_list = list()
     register_operating = list()
     available_operations = init.AVAILABLE_OPERATIONS
 
+    #Inicializa la clase con la topologia y la lista de operandos existentes (atributos de la clase)
     def __init__(self, topology: dict, operating_list=list, *args, **values):
         super().__init__(*args, **values)
         self.topology = topology
         self.operating_list = operating_list
 
+    #Función recursiva para validar operacion
     def validate_operations(self):
         return self.validate_unique_operation(self.topology)
 
+    #Función validar operación inicial en el nivel más alto
     def validate_unique_operation(self, to_validate: dict):
         if len(to_validate.keys()) > 1:
             return False, "No puede existir más de una operación resultante"
@@ -42,7 +51,7 @@ class Operation:
                           f"válidas: {self.available_operations}"
         operandos = to_validate[k[0]]
         print(operandos)
-        if not isinstance(operandos, list) or len(operandos) < 2:
+        if not isinstance(operandos, list) or len(operandos) < 2: #Verifico condiciones de lista operandos
             return False, f"[{k[0]}] Los operandos deben estar dentro de una lista no menor a dos operadores"
 
         # si los operandos son una lista:
@@ -55,8 +64,9 @@ class Operation:
             print(operando)
             # validando operando tipo string
             if isinstance(operando, str):
-                check_op_exists = operando in self.operating_list
-                check_op_was_registered = operando in self.register_operating
+                check_op_exists = operando in self.operating_list #Valida si el operando esta en la lista de operandos existentes
+                check_op_was_registered = operando in self.register_operating #Verifica si el operando ya esta registrado
+                #Registra el operando
                 if check_op_exists and not check_op_was_registered:
                     is_ok = is_ok and True
                     self.register_operating.append(operando)

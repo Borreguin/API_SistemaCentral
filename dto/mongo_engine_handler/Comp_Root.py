@@ -5,6 +5,8 @@ DP V.2
 """
 import hashlib
 import traceback
+
+from dto.Classes.Operation import Operation
 from dto.mongo_engine_handler import log
 from mongoengine import *
 import datetime as dt
@@ -198,6 +200,14 @@ class ComponenteRoot(Document):
             if success:
                 return True, result
         return False, f"No se encontró la hoja con el id {id_leaf}"
+
+    def add_operations(self, to_add_operations: dict):
+        operating_list = [internal.public_id for internal in self.internals]
+        print(operating_list)
+        success, msg = Operation(topology=to_add_operations, operating_list=operating_list).validate_operations()
+        if success:
+            self.topology = to_add_operations
+        return success, msg
 
     def to_dict(self):
         return dict(public_id=self.public_id, bloque=self.block, name=self.name,

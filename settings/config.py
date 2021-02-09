@@ -4,7 +4,7 @@
 config = dict()
 config["name"] = "API Sistema Central "
 config["API_URL_PREFIX"] = "api-sct"
-config["version"] = "1.0"
+config["version"] = "0.3"
 config["PORT"] = 7821
 config["FLASK_DEBUG"] = True
 
