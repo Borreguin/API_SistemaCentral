@@ -6,7 +6,7 @@ config["name"] = "API Sistema Central "
 config["API_URL_PREFIX"] = "api-sct"
 config["version"] = "1.0"
 config["PORT"] = 7821
-config["DEBUG_PORT"] = 5001
+config["DEBUG_PORT"] = 5000
 config["FLASK_DEBUG"] = True
 
 config["RESTPLUS_SWAGGER_UI_DOC_EXPANSION"] = "list"

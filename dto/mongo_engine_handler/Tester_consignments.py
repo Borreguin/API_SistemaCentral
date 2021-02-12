@@ -85,6 +85,8 @@ def test_leafs_and_consignments():
     new_component_db = ComponenteRoot.objects(public_id=new_component.public_id).first()
     for id_leaf in id_leafs:
         success, result = new_component_db.search_leaf_by_id(id_leaf)
+        resp = Consignments.objects(id_elemento=id_leaf).first()
+        print(resp)
         if success:
             if result.consignments is None:
                 print(f"Error con esta hoja: {result}")
