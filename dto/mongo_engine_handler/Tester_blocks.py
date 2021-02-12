@@ -17,29 +17,6 @@ end_date = dt.datetime(year=d_n.year, month=d_n.month, day=d_n.day) - dt.timedel
 t_delta = end_date - ini_date
 n_minutos_evaluate = t_delta.days * (60 * 24) + t_delta.seconds // 60 + t_delta.seconds % 60
 
-
-def test_operation():
-    mongo_config = init.MONGOCLIENT_SETTINGS
-    mongo_config.update(dict(db="DB_DISP_EMS"))
-    connect(**mongo_config)
-    new_block = BloqueRoot(name=f"BLOQUE_ROOT_W_OP{str(r.randint(1, 1000))}")
-    new_leafs = list()
-    id_leafs = list()
-    for i in range(1, 15):
-        new_block_leaf = BloqueLeaf(name=f"BLOQUE_LEAF_TEST_{i}")
-        new_leafs.append(new_block_leaf)
-        id_leafs.append(new_block_leaf.public_id)
-    new_block.add_new_leaf_block(new_leafs)
-    serie = {"SERIE": [id_leafs[0], id_leafs[1], id_leafs[2]]}
-    paralelo = {"PARALELO": [id_leafs[3], id_leafs[4], id_leafs[5]]}
-    ponderado = {"PONDERADO": [id_leafs[6], id_leafs[7], id_leafs[8]]}
-    promedio = {"PROMEDIO": [id_leafs[9], id_leafs[10], id_leafs[11]]}
-    operation = dict(PROMEDIO=[serie, paralelo, id_leafs[12], id_leafs[13], ponderado, promedio])
-    success, msg = new_block.add_operations(operation)
-    new_block.save()
-    return True
-
-
 def test():
     mongo_config = init.MONGOCLIENT_SETTINGS
     mongo_config.update(dict(db="DB_DISP_EMS"))
@@ -93,5 +70,5 @@ def test():
 
 
 if __name__ == "__main__":
-    # test()
-    test_operation()
+    test()
+
