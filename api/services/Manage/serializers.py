@@ -53,4 +53,17 @@ class Serializers:
             "pos_y": fields.Float(required=True, description="La posición y")
         })
 
+        """ Ejemplo: 
+        {"SERIE": ['id1', 'id2' ,
+                    {"PARALELO": ['id3', 'id4']},
+                    {"PARALELO": [{'SERIE': ['id5', 'id6']}, 'id7'}]
+                    ]
+        }       
+        """
+        """ serializador para operacion """
+        self.operation = api.model("topología", {
+        "topology": fields.Raw(required=True, description="La operación a realizar",
+                               default=dict(SERIE=['id1','id2',dict(PARALELO=['id3','id4']),dict(PARALELO=[dict(SERIE=['id5','id6']),'id7'])]))
+        })
+
         return api

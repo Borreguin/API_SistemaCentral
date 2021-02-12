@@ -63,3 +63,21 @@ class BlockAPI(Resource):
                         msg=msg)
         except Exception as e:
             return default_error_handler(e)
+
+@ns.route('/<string:blk_root_id>/operation')
+class OperationAPI(Resource):
+    @api.expect(ser_from.operation)
+    def put(self, blk_root_id: str = "Public Id del bloque root"):
+        """ Valida si una operación es correcta """
+        try:
+            data = request.get_json()
+            blockrootdb = BloqueRoot.objects(public_id=blk_root_id).first()
+            if blockrootdb is None:
+                return dict(success=False, bloqueroot=None, msg='Este bloque no existe'), 409
+            success, msg = blockrootdb.add_operations(data["topology"])
+            if success:
+                blockrootdb.save()
+            return dict(success=success, bloqueroot=blockrootdb.to_dict(),
+                        msg=msg)
+        except Exception as e:
+            return default_error_handler(e)
