@@ -26,6 +26,7 @@ class ComponenteRoot(Document):
     document = StringField(required=True, default="ComponenteRoot")
     unique = StringField(required=True, unique=True)
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
+    topology = DictField(required=False, default=dict())
     meta = {"collection": "CONFG|Componentes"}
 
     def __init__(self, *args, **values):
@@ -201,7 +202,9 @@ class ComponenteRoot(Document):
                 return True, result
         return False, f"No se encontró la hoja con el id {id_leaf}"
 
+    # TODO: revisado
     def add_operations(self, to_add_operations: dict):
+        # El diccionario de topologia es ingrsado mediante la interfaz gráfica
         operating_list = [internal.public_id for internal in self.internals]
         print(operating_list)
         success, msg = Operation(topology=to_add_operations, operating_list=operating_list).validate_operations()

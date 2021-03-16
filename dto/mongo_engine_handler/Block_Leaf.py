@@ -111,13 +111,14 @@ class BloqueLeaf(EmbeddedDocument):
             log.error(f"{msg}​​ \n {tb}​​")
             return False, msg
 
-    def add_operations(self, to_add_operations: dict):
-        operating_list = [root.public_id for root in self.comp_roots]
-        print(operating_list)
-        success, msg = Operation(topology=to_add_operations, operating_list=operating_list).validate_operations()
-        if success:
-            self.topology = to_add_operations
-        return success, msg
+    # TODO: Se remueve está función ya que no existe topologí para los bloques leafs
+    # def add_operations(self, to_add_operations: dict):
+    #    operating_list = [root.public_id for root in self.comp_roots]
+    #    print(operating_list)
+    #    success, msg = Operation(topology=to_add_operations, operating_list=operating_list).validate_operations()
+    #    if success:
+    #        self.topology = to_add_operations
+    #    return success, msg
 
     def update_position_x_y(self, pos_x: float, pos_y: float):
         self.position_x_y = [pos_x, pos_y]

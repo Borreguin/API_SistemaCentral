@@ -19,7 +19,7 @@ ser_from = srl.Serializers(api)
 api = ser_from.add_serializers()
 
 
-@ns.route('/block-root/<blk_root_id>/block-leaf/<blk_leaf_id>/position')
+@ns.route('/block-root/<string:blk_root_id>/block-leaf/<string:blk_leaf_id>/position')
 class BloqueAPI(Resource):
     @api.expect(ser_from.position)
     def put(self, blk_root_id="Id del componente root", blk_leaf_id="Id del componente leaf"):

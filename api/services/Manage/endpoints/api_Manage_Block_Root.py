@@ -64,6 +64,7 @@ class BlockAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
+
 @ns.route('/<string:blk_root_id>/operation')
 class OperationAPI(Resource):
     @api.expect(ser_from.operation)

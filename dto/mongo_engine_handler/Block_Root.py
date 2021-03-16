@@ -104,7 +104,6 @@ class BloqueRoot(Document):
             log.error(f"{msg}​​ \n {tb}​​")
             return False, msg
 
-
     def edit_leaf_by_id(self, public_id: str, new_leaf: dict):
         check = [i for i, e in enumerate(self.block_leafs) if public_id == e.public_id]
         if len(check) == 0:
