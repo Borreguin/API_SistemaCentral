@@ -35,6 +35,7 @@ class ComponentAPIByID(Resource):
         except Exception as e:
             return default_error_handler(e)
 
+
 @ns.route('/comp-root/<string:cmp_root_id>')
 class ComponentInternalInRootAPI(Resource):
     @api.expect(ser_from.internalcomponent)
@@ -78,6 +79,7 @@ class ComponentInternalInInternalAPI(Resource):
         except Exception as e:
             return default_error_handler(e)
 
+
 @ns.route('/comp-root/<string:cmp_root_id>/comp-internal/<string:cmp_intr_id>/position')
 class ComponentAPI(Resource):
     @api.expect(ser_from.position)
@@ -90,11 +92,11 @@ class ComponentAPI(Resource):
             component_root_db = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if component_root_db is None:
                 return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente root asociado a la id {cmp_root_id}")
+                            msg=f"No existe el componente root asociado a la id {cmp_root_id}"), 404
             success, result = component_root_db.search_internal_by_id(cmp_intr_id)
             if not success:
                 return dict(success=False, component_internal=None,
-                            msg=f"No existe el componente internal asociado a la id {cmp_intr_id}")
+                            msg=f"No existe el componente internal asociado a la id {cmp_intr_id}"), 404
             result.update_position_x_y(pos_x, pos_y)
             component_root_db.save()
             return dict(success=True, component_internal=result.to_dict(), msg="Se actualizó position (x, y)")

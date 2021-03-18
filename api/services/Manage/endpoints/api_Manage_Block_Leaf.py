@@ -28,10 +28,12 @@ class BloqueAPI(Resource):
             data = request.get_json()
             block_root_db = BloqueRoot.objects(public_id=blk_root_id).first()
             if block_root_db is None:
-                return dict(success=False, bloque_leaf=None, msg=f"No existe el bloque root asociado a la id {blk_root_id}")
+                return dict(success=False, bloque_leaf=None,
+                            msg=f"No existe el bloque root asociado a la id {blk_root_id}"), 404
             success, result = block_root_db.search_leaf_by_id(blk_leaf_id)
             if not success:
-                return dict(success=False, bloque_leaf=None, msg=f"No existe el bloque leaf asociado a la id {blk_leaf_id}")
+                return dict(success=False, bloque_leaf=None,
+                            msg=f"No existe el bloque leaf asociado a la id {blk_leaf_id}"), 404
             result.update_position_x_y(data["pos_x"], data["pos_y"])
             block_root_db.save()
             return dict(success=True, bloque_leaf=result.to_dict(), msg="Se actualizó position (x, y)")
@@ -125,6 +127,6 @@ class BlockLeafByIDAPI(Resource):
                 return dict(success=False, bloqueroot=None,
                             msg="No existen bloques root asociados a este Public Id"), 404
             bloqueroot_db.search_leaf_by_id(blk_leaf_id)
-            return dict(success=True, bloqueroot=bloqueroot_db.to_dict(), msg="test")
+            return dict(success=True, bloqueroot=bloqueroot_db.to_dict(), msg="Bloque leaf encontrado exitosamente")
         except Exception as e:
             return default_error_handler(e)

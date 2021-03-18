@@ -27,6 +27,7 @@ class BloqueRoot(Document):
     document = StringField(required=True, default="BloqueRoot")
     topology = DictField(required=False, default=dict())
     unique = StringField(required=True, unique=True)
+    position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
     meta = {"collection": "CONFG|Bloques"}
 
     def __init__(self, *args, **values):
@@ -124,6 +125,9 @@ class BloqueRoot(Document):
     def __str__(self):
         return f"<Bloque Root {self.name},{len(self.block_leafs)}>"
 
+    def update_position_x_y(self, pos_x: float, pos_y: float):
+        self.position_x_y = [pos_x, pos_y]
+
     # FUNCIONES DELETE
 
     def delete_leaf(self, name_delete: str):
@@ -185,4 +189,4 @@ class BloqueRoot(Document):
 
     def to_dict(self):
         return dict(document=self.document, public_id=self.public_id, name=self.name,
-                    block_leafs=[i.to_dict() for i in self.block_leafs])
+                    block_leafs=[i.to_dict() for i in self.block_leafs], position_x_y=self.position_x_y, )

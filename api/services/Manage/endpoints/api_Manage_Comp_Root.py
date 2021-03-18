@@ -159,9 +159,10 @@ class ComponentPositionAPI(Resource):
             component_root_db = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if component_root_db is None:
                 return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente root asociado a la id {cmp_root_id}")
+                            msg=f"No existe el componente root asociado a la id {cmp_root_id}"), 404
             component_root_db.update_position_x_y(pos_x, pos_y)
             component_root_db.save()
-            return dict(success=True, component_root=component_root_db.to_dict(), msg="Se actualizó position (x, y)")
+            return dict(success=True, component_root=component_root_db.to_dict(),
+                        msg="Se actualizó position (x, y)"), 200
         except Exception as e:
             return default_error_handler(e)

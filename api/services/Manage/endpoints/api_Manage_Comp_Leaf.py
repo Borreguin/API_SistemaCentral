@@ -80,12 +80,12 @@ class ComponentAPI(Resource):
             component_root_db = ComponenteRoot.objects(public_id=cmp_root_id).first()
             if component_root_db is None:
                 return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente root asociado a la id {cmp_root_id}")
+                            msg=f"No existe el componente root asociado a la id {cmp_root_id}"), 404
 
             success, component_internal = component_root_db.search_internal_by_id(cmp_intr_id)
             if not success:
                 return dict(success=False, component_leaf=None,
-                            msg=f"No existe el componente interno asociado a la id {cmp_intr_id}")
+                            msg=f"No existe el componente interno asociado a la id {cmp_intr_id}"), 404
 
             pos_x, pos_y = data.pop("pos_x", None), data.pop("pos_x", None)
             new_leaf_component = ComponenteLeaf(**data)
