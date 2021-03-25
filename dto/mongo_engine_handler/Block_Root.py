@@ -18,6 +18,14 @@ from dto.mongo_engine_handler.Comp_Internal import ComponenteInternal
 from dto.mongo_engine_handler.Comp_Leaf import ComponenteLeaf
 
 
+class OperationBlock(EmbeddedDocument):
+    public_id = StringField(required=True, default=None)
+    operation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
+    operator_ids = ListField(StringField(), default=[], required=True)
+    parameters = DictField(required=False)
+    position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
+
+
 class BloqueRoot(Document):
     public_id = StringField(required=True, default=None)
     name = StringField(required=True, unique=True)
@@ -28,6 +36,7 @@ class BloqueRoot(Document):
     topology = DictField(required=False, default=dict())
     unique = StringField(required=True, unique=True)
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
+    operation_blocks = ListField(OperationBlock, required=False)
     meta = {"collection": "CONFG|Bloques"}
 
     def __init__(self, *args, **values):
