@@ -3,17 +3,9 @@ COMPONENT ROOT- BASE DE DATOS PARA SISTEMA CENTRAL
 START DATE: 10/11/2020
 DP V.2
 """
-import hashlib
-import traceback
 
-from dto.Classes.Operation import Operation
-from dto.mongo_engine_handler import log
-from mongoengine import *
-import datetime as dt
-import uuid
-from settings import initial_settings as init
-from dto.mongo_engine_handler.Comp_Internal import *
-from dto.mongo_engine_handler.Comp_Leaf import *
+from dto.mongo_engine_handler.Components.Comp_Internal import *
+from dto.mongo_engine_handler.Components.Comp_Leaf import *
 
 
 class ComponenteRoot(Document):

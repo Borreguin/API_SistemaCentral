@@ -3,19 +3,9 @@ BLOQUE ROOT- BASE DE DATOS PARA SISTEMA CENTRAL
 START DATE: 12/11/2020
 DP V.1
 """
-import hashlib
-import traceback
 
-from dto.Classes.Operation import Operation
-from dto.mongo_engine_handler import log
-from mongoengine import *
-import datetime as dt
-import uuid
-
-from dto.mongo_engine_handler.Block_Leaf import *
+from dto.mongo_engine_handler.Blocks.Block_Leaf import *
 from settings import initial_settings as init
-from dto.mongo_engine_handler.Comp_Internal import ComponenteInternal
-from dto.mongo_engine_handler.Comp_Leaf import ComponenteLeaf
 
 
 class BloqueRoot(Document):
@@ -27,7 +17,7 @@ class BloqueRoot(Document):
     document = StringField(required=True, default="BloqueRoot")
     topology = DictField(required=False, default=dict())
     unique = StringField(required=True, unique=True)
-    meta = {"collection": "CONFG|Bloques"}
+    meta = {"collection": "CONFG|Blocks"}
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
@@ -56,7 +46,7 @@ class BloqueRoot(Document):
         self.block_leafs = [unique[k] for k in unique.keys()]
         n_final = len(self.block_leafs)
         self.delete_leaf(self.name)
-        return True, f"Bloques: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
+        return True, f"Blocks: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
 
     def add_new_leaf_block(self, leaf_block_list: list):
         # Añade solamente aquellos que son nuevos
@@ -80,7 +70,7 @@ class BloqueRoot(Document):
             self.block_leafs += new_leafs
             self.block_leafs.sort(key=lambda x: x.name)
         msg = "El bloque ya existe" if len(leaf_block_list) == 1 else "Los bloques ya existen"
-        return success, f"Bloques añadidos: [{len(new_leafs)}]" if success else msg
+        return success, f"Blocks añadidos: [{len(new_leafs)}]" if success else msg
 
     # TODO: Root to internal (Funcion de bloque??)
     def change_root_to_internal(self, root):

@@ -3,16 +3,8 @@ COMPONENTES EN BASE DE DATOS PARA SISTEMA CENTRAL
 START DATE: 21/10/2020
 DP V.1
 """
-import hashlib
-import traceback
 
-from dto.Classes.Operation import Operation
-from dto.mongo_engine_handler import log
-from mongoengine import *
-import datetime as dt
-import uuid
-from settings import initial_settings as init
-from dto.mongo_engine_handler.Comp_Root import *
+from dto.mongo_engine_handler.Components.Comp_Root import *
 
 
 class BloqueLeaf(EmbeddedDocument):

@@ -39,14 +39,6 @@ def check_date_yyyy_mm_dd_hh_mm_ss(s):
     except Exception as e:
         return False, str(e)
 
-def check_date(s):
-    if isinstance(s,dt.datetime):
-        return True,s
-    success,result= check_date_yyyy_mm_dd(s)
-    if success:
-        return success,result
-    return check_date_yyyy_mm_dd_hh_mm_ss(s)
-
 
 def read_excel(file_name):
     """
@@ -208,3 +200,9 @@ def is_active(path_file, id: str,  time_delta: dt.timedelta):
         tb = traceback.extract_stack()
         print(f"{str(e)} \n {tb}")
         return True
+
+
+# determina si debe usar el reporte temporal o el reporte definitivo:
+def isTemporal(ini_date: dt.datetime, end_date: dt.datetime):
+    delta = end_date - ini_date
+    return delta.days < 7
