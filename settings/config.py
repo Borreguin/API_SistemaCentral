@@ -4,7 +4,7 @@ import os
 config = dict()
 config["name"] = "API Sistema Central "
 config["API_URL_PREFIX"] = "api-sct"
-config["version"] = "0.3"
+config["version"] = "0.4"
 config["PORT"] = 7821
 config["DEBUG_PORT"] = 5000
 config["FLASK_DEBUG"] = True

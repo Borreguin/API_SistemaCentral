@@ -12,10 +12,8 @@ from mongoengine import *
 import datetime as dt
 import uuid
 
-from dto.mongo_engine_handler.Block_Leaf import *
+from dto.mongo_engine_handler.Blocks.Block_Leaf import BloqueLeaf
 from settings import initial_settings as init
-from dto.mongo_engine_handler.Comp_Internal import ComponenteInternal
-from dto.mongo_engine_handler.Comp_Leaf import ComponenteLeaf
 
 
 class OperationBlock(EmbeddedDocument):
