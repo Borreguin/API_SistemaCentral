@@ -510,7 +510,7 @@ def test():
 
 
 if __name__ == "__main__":
-    perform_test = False
+    perform_test = True
     if perform_test:
         test()
 

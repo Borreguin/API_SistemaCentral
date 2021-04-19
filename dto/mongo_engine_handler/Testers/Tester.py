@@ -2,9 +2,9 @@ import random as r
 from mongoengine import *
 import datetime as dt
 
-from dto.mongo_engine_handler.Comp_Root import ComponenteRoot
-from dto.mongo_engine_handler.Comp_Internal import ComponenteInternal
-from dto.mongo_engine_handler.Comp_Leaf import ComponenteLeaf
+from dto.mongo_engine_handler.Components.Comp_Root import ComponenteRoot
+from dto.mongo_engine_handler.Components.Comp_Internal import ComponenteInternal
+from dto.mongo_engine_handler.Components.Comp_Leaf import ComponenteLeaf
 from settings import initial_settings as init
 DEBUG = True
 

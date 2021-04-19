@@ -19,7 +19,7 @@ from api.services.restplus_config import api
 from api.services.restplus_config import default_error_handler
 # importando clases para leer desde MongoDB
 # importando configuraciones iniciales
-from dto.mongo_engine_handler.Consignment import Consignments, Consignment
+from dto.mongo_engine_handler.Info.Consignment import Consignments, Consignment
 from my_lib import utils as u
 from settings import initial_settings as init
 

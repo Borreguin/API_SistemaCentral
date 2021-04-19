@@ -37,7 +37,7 @@ class BloqueRoot(Document):
     unique = StringField(required=True, unique=True)
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
     operation_blocks = ListField(OperationBlock, required=False)
-    meta = {"collection": "CONFG|Bloques"}
+    meta = {"collection": "CONFG|Blocks"}
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
@@ -66,7 +66,7 @@ class BloqueRoot(Document):
         self.block_leafs = [unique[k] for k in unique.keys()]
         n_final = len(self.block_leafs)
         self.delete_leaf(self.name)
-        return True, f"Bloques: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
+        return True, f"Blocks: -remplazados: [{n_total - n_final}] -añadidos: [{n_final - n_initial}]"
 
     def add_new_leaf_block(self, leaf_block_list: list):
         # Añade solamente aquellos que son nuevos
@@ -90,7 +90,7 @@ class BloqueRoot(Document):
             self.block_leafs += new_leafs
             self.block_leafs.sort(key=lambda x: x.name)
         msg = "El bloque ya existe" if len(leaf_block_list) == 1 else "Los bloques ya existen"
-        return success, f"Bloques añadidos: [{len(new_leafs)}]" if success else msg
+        return success, f"Blocks añadidos: [{len(new_leafs)}]" if success else msg
 
     # TODO: Root to internal (Funcion de bloque??)
     def change_root_to_internal(self, root):

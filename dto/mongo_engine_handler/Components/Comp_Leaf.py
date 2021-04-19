@@ -3,14 +3,9 @@ COMPONENTES EN BASE DE DATOS PARA SISTEMA CENTRAL
 START DATE: 21/10/2020
 DP V.1
 """
-import hashlib
-import traceback
 from dto.mongo_engine_handler import log
-from mongoengine import *
-import datetime as dt
-import uuid
-
-from dto.mongo_engine_handler.Consignment import *
+from dto.mongo_engine_handler.Sources.ReportSource import *
+from dto.mongo_engine_handler.Info.Consignment import *
 from settings import initial_settings as init
 
 
@@ -22,7 +17,7 @@ class ComponenteLeaf(EmbeddedDocument):
     updated = DateTimeField(default=dt.datetime.now())
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
     consignments = ReferenceField(Consignments, dbref=True)
-
+    reports = ReferenceField(ReportSource, dbref=True)
     def __init__(self, *args, **values):
         super().__init__(*args, **values)
         if self.public_id is None:
