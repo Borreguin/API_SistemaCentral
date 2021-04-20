@@ -19,7 +19,7 @@ class ComponenteRoot(Document):
     unique = StringField(required=True, unique=True)
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
     topology = DictField(required=False, default=dict())
-    meta = {"collection": "CONFG|Componentes"}
+    meta = {"collection": "CONFG|Components"}
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)

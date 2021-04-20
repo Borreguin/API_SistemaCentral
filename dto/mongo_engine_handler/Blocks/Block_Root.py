@@ -47,7 +47,7 @@ class BloqueRoot(Document):
         if self.unique is None:
             self.unique = str(self.name).lower()
 
-    def add_and_replace_leaf_block(self, leaf_block: list):
+    def add_or_replace_leaf_block(self, leaf_block: list):
         # Esta función añade nuevos leafs blocks, en caso que ya exista el bloque leaf este es reemplazado
         # check si todas los root_component_list son de tipo ComponenteInternal
         check = [isinstance(t, BloqueLeaf) for t in leaf_block]
@@ -90,9 +90,25 @@ class BloqueRoot(Document):
         msg = "El bloque ya existe" if len(leaf_block_list) == 1 else "Los bloques ya existen"
         return success, f"Blocks añadidos: [{len(new_leafs)}]" if success else msg
 
-    # TODO: Root to internal (Funcion de bloque??)
-    def change_root_to_internal(self, root):
-        pass
+    def add_or_replace_internal_operation(self, operation: OperationBlock):
+        exists = False
+        for idx, op in enumerate(self.operation_blocks):
+            if op.public_id == operation.public_id:
+                exists = True
+                self.operation_blocks[idx] = operation
+                break
+        if not exists:
+            self.operation_blocks.append(operation)
+        return True, "Operación editada" if exists else "Operación añadida"
+
+    def delete_internal_operation(self, operation: OperationBlock):
+        exists = False
+        for idx, op in enumerate(self.operation_blocks):
+            if op.public_id == operation.public_id:
+                exists = True
+                self.operation_blocks.pop(idx)
+                break
+        return exists, "Operación eliminada" if exists else "Operación no encontrada"
 
     # Funciones para editar
     def edit_root_block(self, new_root: dict):

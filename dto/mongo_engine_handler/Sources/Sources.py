@@ -20,7 +20,7 @@ class Sources(Document):
     parameters=DictField(required=False, default=dict())
     root_id = StringField(required=True, default=None)
     leaf_id = StringField(required=True, default=None)
-    meta = {"collection": "CONFG|Fuentes"}
+    meta = {"collection": "CONFG|Sources"}
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)

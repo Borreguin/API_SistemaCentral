@@ -58,7 +58,7 @@ class BlockAPI(Resource):
             return default_error_handler(e)
 
 
-@ns.route('/<string:blk_root_id>/operation')
+@ns.route('/<string:blk_root_id>/valid-operation')
 class OperationAPI(Resource):
     @api.expect(ser_from.operation)
     def put(self, blk_root_id: str = "Public Id del bloque root"):
@@ -79,6 +79,26 @@ class OperationAPI(Resource):
 
 @ns.route('/<string:blk_root_id>/position')
 class ComponentPositionAPI(Resource):
+    @api.expect(ser_from.position)
+    def put(self, blk_root_id="Id del bloque root"):
+        """ Actualiza la posición x e y """
+        try:
+            data = request.get_json()
+            pos_x = data["pos_x"]
+            pos_y = data["pos_y"]
+            block_root_db = BloqueRoot.objects(public_id=blk_root_id).first()
+            if block_root_db is None:
+                return dict(success=False, component_leaf=None,
+                            msg=f"No existe el componente root asociado a la id {blk_root_id}"), 404
+            block_root_db.update_position_x_y(pos_x, pos_y)
+            block_root_db.save()
+            return dict(success=True, bloqueroot=block_root_db.to_dict(), msg="Se actualizó position (x, y)")
+        except Exception as e:
+            return default_error_handler(e)
+
+
+@ns.route('/<string:blk_root_id>/operation')
+class OperationAPI(Resource):
     @api.expect(ser_from.position)
     def put(self, blk_root_id="Id del bloque root"):
         """ Actualiza la posición x e y """
