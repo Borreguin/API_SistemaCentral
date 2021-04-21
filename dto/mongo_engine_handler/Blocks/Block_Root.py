@@ -20,8 +20,11 @@ class OperationBlock(EmbeddedDocument):
     public_id = StringField(required=True, default=None)
     operation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
     operator_ids = ListField(StringField(), default=[], required=True)
-    parameters = DictField(required=False)
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
+
+    def to_dict(self):
+        return dict(public_id=self.public_id, operation_type=self.operation_type,
+                    operator_ids=self.operator_ids, position_x_y=self.position_x_y)
 
 
 class BloqueRoot(Document):
@@ -34,7 +37,7 @@ class BloqueRoot(Document):
     topology = DictField(required=False, default=dict())
     unique = StringField(required=True, unique=True)
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
-    operation_blocks = ListField(OperationBlock, required=False)
+    operation_blocks = ListField(EmbeddedDocumentField(OperationBlock), required=False)
     meta = {"collection": "CONFG|Blocks"}
 
     def __init__(self, *args, **values):
@@ -101,10 +104,10 @@ class BloqueRoot(Document):
             self.operation_blocks.append(operation)
         return True, "Operación editada" if exists else "Operación añadida"
 
-    def delete_internal_operation(self, operation: OperationBlock):
+    def delete_internal_operation(self, public_id: str):
         exists = False
         for idx, op in enumerate(self.operation_blocks):
-            if op.public_id == operation.public_id:
+            if op.public_id == public_id:
                 exists = True
                 self.operation_blocks.pop(idx)
                 break
@@ -212,4 +215,5 @@ class BloqueRoot(Document):
 
     def to_dict(self):
         return dict(document=self.document, public_id=self.public_id, name=self.name,
-                    block_leafs=[i.to_dict() for i in self.block_leafs], position_x_y=self.position_x_y, )
+                    block_leafs=[i.to_dict() for i in self.block_leafs],
+                    position_x_y=self.position_x_y, operation_blocks=[op.to_dict() for op in self.operation_blocks])

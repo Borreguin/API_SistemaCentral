@@ -98,20 +98,35 @@ class ComponentPositionAPI(Resource):
 
 
 @ns.route('/<string:blk_root_id>/operation')
-class OperationAPI(Resource):
-    @api.expect(ser_from.position)
+class OperationBlockAPI(Resource):
+    @api.expect(ser_from.operation_block)
     def put(self, blk_root_id="Id del bloque root"):
-        """ Actualiza la posición x e y """
+        """ Permite añadir una operación interna dentro del bloque """
         try:
             data = request.get_json()
-            pos_x = data["pos_x"]
-            pos_y = data["pos_y"]
+            operation = OperationBlock(**data)
             block_root_db = BloqueRoot.objects(public_id=blk_root_id).first()
             if block_root_db is None:
                 return dict(success=False, component_leaf=None,
                             msg=f"No existe el componente root asociado a la id {blk_root_id}"), 404
-            block_root_db.update_position_x_y(pos_x, pos_y)
+            success, msg = block_root_db.add_or_replace_internal_operation(operation)
             block_root_db.save()
-            return dict(success=True, bloqueroot=block_root_db.to_dict(), msg="Se actualizó position (x, y)")
+            return dict(success=True, bloqueroot=block_root_db.to_dict(), msg=msg)
+        except Exception as e:
+            return default_error_handler(e)
+
+
+@ns.route('/<string:blk_root_id>/operation/<string:blk_operation_id>')
+class OperationBlockAPI(Resource):
+    def delete(self, blk_root_id="Id del bloque root", blk_operation_id="Id del bloque de operación"):
+        """ Permite añadir una operación interna dentro del bloque """
+        try:
+            block_root_db = BloqueRoot.objects(public_id=blk_root_id).first()
+            if block_root_db is None:
+                return dict(success=False, component_leaf=None,
+                            msg=f"No existe el componente root asociado a la id {blk_root_id}"), 404
+            success, msg = block_root_db.delete_internal_operation(blk_operation_id)
+            block_root_db.save()
+            return dict(success=True, bloqueroot=block_root_db.to_dict(), msg=msg)
         except Exception as e:
             return default_error_handler(e)

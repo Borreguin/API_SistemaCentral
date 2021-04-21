@@ -57,7 +57,8 @@ class Serializers:
         self.operation_block = api.model("Operación interna", {
             "public_id": fields.String(required=True, description="Id público de la operación"),
             "operation_type": fields.String(required=True, description="['PONDERADO', 'PROMEDIO']"),
-            "operator_ids": fields.List(fields.String),
+            "operator_ids": fields.List(fields.String, required=True),
+            "position_x_y": fields.List(fields.Float, required=True, default=[0, 0])
         })
 
         """ Ejemplo: 
