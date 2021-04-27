@@ -4,7 +4,7 @@ START DATE: 10/11/2020
 DP V.2
 """
 
-from dto.Classes.Operation import Operation
+from dto.Classes.Topology import Topology
 # from dto.mongo_engine_handler.Comp_Root import ComponenteRoot
 from dto.mongo_engine_handler.Components.Comp_Leaf import *
 
@@ -229,7 +229,7 @@ class ComponenteInternal(EmbeddedDocument):
         operating_list = [internal.public_id for internal in self.internals]
         operating_list=operating_list+([leaf.public_id for leaf in self.leafs])
         print(operating_list)
-        success, msg = Operation(topology=to_add_operations, operating_list=operating_list).validate_operations()
+        success, msg = Topology(topology=to_add_operations, operating_list=operating_list).validate_operations()
         if success:
             self.topology = to_add_operations
         return success, msg

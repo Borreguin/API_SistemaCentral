@@ -199,7 +199,7 @@ class ComponenteRoot(Document):
         # El diccionario de topologia es ingrsado mediante la interfaz gráfica
         operating_list = [internal.public_id for internal in self.internals]
         print(operating_list)
-        success, msg = Operation(topology=to_add_operations, operating_list=operating_list).validate_operations()
+        success, msg = Topology(topology=to_add_operations, operating_list=operating_list).validate_operations()
         if success:
             self.topology = to_add_operations
         return success, msg

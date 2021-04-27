@@ -107,7 +107,7 @@ class BloqueLeaf(EmbeddedDocument):
     # def add_operations(self, to_add_operations: dict):
     #    operating_list = [root.public_id for root in self.comp_roots]
     #    print(operating_list)
-    #    success, msg = Operation(topology=to_add_operations, operating_list=operating_list).validate_operations()
+    #    success, msg = Topology(topology=to_add_operations, operating_list=operating_list).validate_operations()
     #    if success:
     #        self.topology = to_add_operations
     #    return success, msg

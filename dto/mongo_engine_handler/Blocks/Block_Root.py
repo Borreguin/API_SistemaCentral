@@ -3,10 +3,10 @@ BLOQUE ROOT- BASE DE DATOS PARA SISTEMA CENTRAL
 START DATE: 12/11/2020
 DP V.1
 """
-import hashlib
 import traceback
 
 from dto.Classes.Operation import Operation
+from dto.Classes.Topology import Topology
 from dto.mongo_engine_handler import log
 from mongoengine import *
 import datetime as dt
@@ -14,17 +14,6 @@ import uuid
 
 from dto.mongo_engine_handler.Blocks.Block_Leaf import BloqueLeaf
 from settings import initial_settings as init
-
-
-class OperationBlock(EmbeddedDocument):
-    public_id = StringField(required=True, default=None)
-    operation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
-    operator_ids = ListField(StringField(), default=[], required=True)
-    position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
-
-    def to_dict(self):
-        return dict(public_id=self.public_id, operation_type=self.operation_type,
-                    operator_ids=self.operator_ids, position_x_y=self.position_x_y)
 
 
 class BloqueRoot(Document):
@@ -37,7 +26,7 @@ class BloqueRoot(Document):
     topology = DictField(required=False, default=dict())
     unique = StringField(required=True, unique=True)
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
-    operation_blocks = ListField(EmbeddedDocumentField(OperationBlock), required=False)
+    operations = ListField(EmbeddedDocumentField(Operation), required=False)
     meta = {"collection": "CONFG|Blocks"}
 
     def __init__(self, *args, **values):
@@ -93,23 +82,23 @@ class BloqueRoot(Document):
         msg = "El bloque ya existe" if len(leaf_block_list) == 1 else "Los bloques ya existen"
         return success, f"Blocks añadidos: [{len(new_leafs)}]" if success else msg
 
-    def add_or_replace_internal_operation(self, operation: OperationBlock):
+    def add_or_replace_internal_operation(self, operation: Operation):
         exists = False
-        for idx, op in enumerate(self.operation_blocks):
+        for idx, op in enumerate(self.operations):
             if op.public_id == operation.public_id:
                 exists = True
-                self.operation_blocks[idx] = operation
+                self.operations[idx] = operation
                 break
         if not exists:
-            self.operation_blocks.append(operation)
+            self.operations.append(operation)
         return True, "Operación editada" if exists else "Operación añadida"
 
     def delete_internal_operation(self, public_id: str):
         exists = False
-        for idx, op in enumerate(self.operation_blocks):
+        for idx, op in enumerate(self.operations):
             if op.public_id == public_id:
                 exists = True
-                self.operation_blocks.pop(idx)
+                self.operations.pop(idx)
                 break
         return exists, "Operación eliminada" if exists else "Operación no encontrada"
 
@@ -132,18 +121,14 @@ class BloqueRoot(Document):
             return False, msg
 
     def edit_leaf_by_id(self, public_id: str, new_leaf: dict):
-        check = [i for i, e in enumerate(self.block_leafs) if public_id == e.public_id]
-        if len(check) == 0:
-            return False, None, "No encontró bloque leaf asociado a este Id público"
-        try:
-            success, msg = self.block_leafs[check[0]].edit_leaf_block(new_leaf)
-            if success:
-                for comp in self.block_leafs[check[0]].comp_roots:
-                    comp.block = self.block_leafs[check[0]].name
-                return success, self.block_leafs[check[0]], msg
-            return False, None, msg
-        except Exception as e:
-            return False, None, f"Ocurrió un problema al actualizar el bloque leaf. {str(e)}"
+        for idx, block_leaf in enumerate(self.block_leafs):
+            if block_leaf.public_id == public_id:
+                success, msg = self.block_leafs[idx].edit_leaf_block(new_leaf)
+                if success:
+                    for comp in self.block_leafs[idx].comp_roots:
+                        comp.block = self.block_leafs[idx].name
+                    return success, self.block_leafs[idx], msg
+        return False, None, "No se encontró bloque leaf asociado a este Id público"
 
     def __repr__(self):
         return f"<Bloque Root {self.name},{len(self.block_leafs)}>"
@@ -194,7 +179,7 @@ class BloqueRoot(Document):
     def add_operations(self, to_add_operations: dict):
         operating_list = [leaf.public_id for leaf in self.block_leafs]
         print(operating_list)
-        success, msg = Operation(topology=to_add_operations, operating_list=operating_list).validate_operations()
+        success, msg = Topology(topology=to_add_operations, operating_list=operating_list).validate_operations()
         if success:
             self.topology = to_add_operations
         return success, msg
@@ -216,4 +201,4 @@ class BloqueRoot(Document):
     def to_dict(self):
         return dict(document=self.document, public_id=self.public_id, name=self.name,
                     block_leafs=[i.to_dict() for i in self.block_leafs],
-                    position_x_y=self.position_x_y, operation_blocks=[op.to_dict() for op in self.operation_blocks])
+                    position_x_y=self.position_x_y, operations=[op.to_dict() for op in self.operations])

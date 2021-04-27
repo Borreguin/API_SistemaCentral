@@ -1,4 +1,4 @@
-from settings.initial_settings import SUPPORTED_FORMAT_DATES as time_formats
+from settings import initial_settings as init
 from flask_restplus import fields, Model
 
 import datetime as dt
@@ -53,13 +53,21 @@ class Serializers:
             "pos_y": fields.Float(required=True, description="La posición y")
         })
 
-        """ serializador para añadir operación """
-        self.operation_block = api.model("Operación interna", {
-            "public_id": fields.String(required=True, description="Id público de la operación"),
-            "operation_type": fields.String(required=True, description="['PONDERADO', 'PROMEDIO']"),
-            "operator_ids": fields.List(fields.String, required=True),
-            "position_x_y": fields.List(fields.Float, required=True, default=[0, 0])
-        })
+        def recursive_operations(iteration_number=10):
+            operation_fields = {
+                "public_id": fields.String(required=True, description="Id público de la operación"),
+                "name": fields.String(required=True, description="Nombre de la operación"),
+                "type": fields.String(required=True, description=f"{init.AVAILABLE_OPERATIONS}"),
+                "operator_ids": fields.List(fields.String, required=True),
+                "position_x_y": fields.List(fields.Float, required=False, default=[0, 0])
+            }
+            """ serializador para añadir operación """
+            if iteration_number:
+                operation_fields["operations"] = fields.List(fields.Nested(recursive_operations(iteration_number-1),
+                                                                           description="Operación interna"))
+            return api.model(f'operation_{str(iteration_number)}', operation_fields)
+
+        self.operations = recursive_operations()
 
         """ Ejemplo: 
         {"SERIE": ['id1', 'id2' ,
