@@ -42,7 +42,8 @@ def create_condition(condition,tag_name):
 def validate_expression(pi_svr,tag_name,condition,time_range=None):
     try:
         # buscando la Tag en el servidor PI
-        pt = pi_svr.find_PI_point(tag_name)
+        pt = PI_point(pi_svr,tag_name)
+       #pt = pi_svr.find_PI_point(tag_name)
         if pt is None:
             return False,f'La tag {tag_name} no ha sido encontrada'
         expression=create_condition(condition,tag_name)
