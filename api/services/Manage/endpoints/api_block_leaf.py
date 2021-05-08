@@ -78,12 +78,12 @@ class BlocLeafByID(Resource):
                 comp.delete()
             bloque_root.save()
             return dict(success=True, bloqueroot=bloque_root.to_dict(), msg=msg), 200
-        return dict(success=False, bloqueroot=bloque_root.to_dict(), msg=msg)
+        return dict(success=False, bloqueroot=bloque_root.to_dict(), msg=msg), 404
 
 
 @ns.route('/block-root/<string:blk_root_id>')
 class Block_leafAPI(Resource):
-    @api.expect(ser_from.blockroot)
+    @api.expect(ser_from.blockleaf)
     def post(self, blk_root_id: str = "Public Id del bloque root"):
         """ Crea un nuevo bloque leaf usando blk_root_id del bloque root """
         data = request.get_json()

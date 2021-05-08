@@ -12,15 +12,16 @@ from waitress import serve
 from api.services.restplus_config import api as api_p
 from settings import initial_settings as init
 from api import app
-#from api.authentication.auth import add_authentication
+
+# from api.authentication.auth import add_authentication
 
 """ EndPoints """
 # namespaces: Todos los servicios de esta API
-from api.services.Manage.endpoints.api_Manage_Comp_Root import ns as namespace_Comp_Root
-from api.services.Manage.endpoints.api_Manage_Comp_Internal import ns as namespace_Comp_Internal
-from api.services.Manage.endpoints.api_Manage_Comp_Leaf import ns as namespace_Comp_Leaf
-from api.services.Manage.endpoints.api_Manage_Block_Leaf import ns as namespace_Block_Leaf
-from api.services.Manage.endpoints.api_Manage_Block_Root import ns as namespace_Block_Root
+from api.services.Manage.endpoints.api_component_root import ns as namespace_Comp_Root
+from api.services.Manage.endpoints.api_component_internal import ns as namespace_Comp_Internal
+from api.services.Manage.endpoints.api_component_leaf import ns as namespace_Comp_Leaf
+from api.services.Manage.endpoints.api_block_leaf import ns as namespace_Block_Leaf
+from api.services.Manage.endpoints.api_block_root import ns as namespace_Block_Root
 from api.services.Consignaciones.endpoints.api_Consignaciones import ns as namespace_Consignaciones
 
 

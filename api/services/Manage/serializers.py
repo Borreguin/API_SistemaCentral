@@ -42,6 +42,15 @@ class Serializers:
             "name": fields.String(required=True, description="nombre del bloque root")
         })
 
+        """ serializador para bloque leaf """
+        self.blockleaf = api.model("blockleaf", {
+            "name": fields.String(required=True, description="nombre del bloque leaf"),
+            "document": fields.String(required=False, description="['BloqueLeaf', 'AverageNode']"),
+            "calculation_type": fields.String(required=False, description=f"{init.AVAILABLE_OPERATIONS}"),
+            "position_x_y": fields.List(fields.Float, required=False, default=[0, 0],
+                                        description="[posición x, posición y]")
+        })
+
         """ serializador para componente leaf """
         self.componentleaf = api.model("componentleaf", {
             "name": fields.String(required=True, description="nombre del componente leaf")

@@ -3,7 +3,7 @@ COMPONENTES EN BASE DE DATOS PARA SISTEMA CENTRAL
 START DATE: 21/10/2020
 DP V.1
 """
-
+from dto.Classes.Operation import Operation
 from dto.mongo_engine_handler.Components.Comp_Root import *
 
 
@@ -14,6 +14,7 @@ class BloqueLeaf(EmbeddedDocument):
     calculation_type = StringField(choices=tuple(init.AVAILABLE_OPERATIONS))
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
     updated = DateTimeField(default=dt.datetime.now())
+    operations = ListField(EmbeddedDocumentField(Operation), required=False)
     # REFERENCIA COMPONENTE ROOT
     comp_roots = ListField(ReferenceField(ComponenteRoot, dbref=True), default=[])
 

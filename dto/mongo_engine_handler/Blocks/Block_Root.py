@@ -26,7 +26,6 @@ class BloqueRoot(Document):
     topology = DictField(required=False, default=dict())
     unique = StringField(required=True, unique=True)
     position_x_y = ListField(FloatField(), default=lambda: [0.0, 0.0])
-    operations = ListField(EmbeddedDocumentField(Operation), required=False)
     meta = {"collection": "CONFG|Blocks"}
 
     def __init__(self, *args, **values):
@@ -70,7 +69,8 @@ class BloqueRoot(Document):
         for n_leaf in leaf_block_list:
             not_found = True
             for b_leaf in self.block_leafs:
-                if str(n_leaf.name).lower().strip() == str(b_leaf.name).lower().strip():
+                if n_leaf.public_id == b_leaf.public_id:
+                    # if str(n_leaf.name).lower().strip() == str(b_leaf.name).lower().strip():
                     not_found = False
             if not_found:
                 new_leafs.append(n_leaf)
@@ -157,7 +157,7 @@ class BloqueRoot(Document):
             return False, f"No existe el bloque [{id_leaf}] en el bloque root [{self.name}]"
         self.block_leafs = new_block_leafs
         # Cuando se elimina un bloque interno, no importa si este queda vacío.
-        return True, "Bloque leaf eliminado"
+        return True, f"Bloque {self.document} eliminado"
 
     # FUNCIONES SEARCH
 
@@ -201,4 +201,4 @@ class BloqueRoot(Document):
     def to_dict(self):
         return dict(document=self.document, public_id=self.public_id, name=self.name,
                     block_leafs=[i.to_dict() for i in self.block_leafs],
-                    position_x_y=self.position_x_y, operations=[op.to_dict() for op in self.operations])
+                    position_x_y=self.position_x_y)
