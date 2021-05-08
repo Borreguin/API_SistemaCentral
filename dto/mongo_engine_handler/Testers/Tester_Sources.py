@@ -30,7 +30,18 @@ def test_Sources():
     new_component.save()
     new_leaf_component = ComponenteLeaf(name="LEAF_TEST_1")
     new_internal_component.add_leaf_component([new_leaf_component])
+    new_leaf_component.create_consignments_container()
+    consignaciones = new_leaf_component.consignments
+    consignacion = Consignment(fecha_inicio='2020-06-01 00:00:00', fecha_final='2020-06-01 16:00:00',
+                               no_consignacion=str(r.randint(1, 1000)))
+    success, msg = consignaciones.insert_consignments(consignacion)
+    if not success:
+        print(msg)
+        # It was not inserted because some time conflict with others
+        return False # continue with the next
+    consignaciones.save()
     new_component.save()
+
    #FUENTES
     case=init.AVAILABLE_SOURCES[3]
     #CASO MANUAL
@@ -82,7 +93,7 @@ def test_Sources():
         #TODO: REVISAR CONDICION DE FILTRADO
         #TODO: REVISAR FUENTE
         parameters = dict(type=init.AVAILABLE_SOURCES[3],piserver_name=None, fecha_inicio='2020-06-01 00:00:00',
-                          fecha_final='2020-06-02 00:00:00', tag_name='UTR_D_PERIPA_IEC8705104.SV',condicion_filtrado="DISPONIBLE")
+                          fecha_final='2020-06-02 00:00:00', tag_name='UTR_D_PERIPA_IEC8705104.SV',condicion_filtrado="INDISPONIBLE")
         source_PI = Sources(type=init.AVAILABLE_SOURCES[3], parameters=parameters,
                             root_id=new_component.public_id, leaf_id=new_leaf_component.public_id)
         source_PI.save()
@@ -98,12 +109,6 @@ def test_Sources():
 
     else:
         return False
-
-
-
-
-
-
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ START DATE: 21/10/2020
 DP V.1
 """
 from dto.mongo_engine_handler import log
-from dto.mongo_engine_handler.Sources.ReportSource import *
+from dto.mongo_engine_handler.Sources.ReportSource import ReportSource
 from dto.mongo_engine_handler.Info.Consignment import *
 from settings import initial_settings as init
 

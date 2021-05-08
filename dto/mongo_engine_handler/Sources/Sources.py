@@ -3,6 +3,7 @@ COMPONENT ROOT- BASE DE DATOS PARA SISTEMA CENTRAL
 START DATE: 10/11/2020
 DP V.2
 """
+from dto.mongo_engine_handler.Components.Comp_Root import ComponenteRoot
 from my_lib.PI_connection import pi_connect as pi
 from dto.mongo_engine_handler.Sources.ReportSource import ReportSource
 from dto.Classes.Valid_BD_SR import Valid_BD_SR
@@ -12,6 +13,7 @@ from dto.mongo_engine_handler.Components.Comp_Leaf import *
 from dto.mongo_engine_handler.Info.Manual import Manual, Manuals_entry
 from my_lib.utils import check_date
 from settings import initial_settings as init
+import datetime
 
 class Sources(Document):
     public_id = StringField(required=True, default=None)
@@ -84,25 +86,41 @@ class Sources(Document):
     def historico(self, ini_date:dt.datetime, end_date: dt.datetime):
         historic_report=ReportSource(leaf_id=self.leaf_id,root_id=self.root_id,tipo='Historico',
                                      fuente=init.AVAILABLE_SOURCES[3],fecha_inicio=ini_date,fecha_final=end_date)
+        success,ini_date=check_date(ini_date)
+        success,end_date = check_date(end_date)
         piserver_name = self.parameters['piserver_name']
         tag_name = self.parameters['tag_name']
         condicion_filtrado = self.parameters['condicion_filtrado']
         valid_source = Valid_Source_PI(piserver_name,tag_name,condicion_filtrado)
         # verificar que exista el contenedor de consignaciones:
-        consignaciones = ComponenteLeaf.consignments
-        #Consultar consignaciones en el periodo
-        consignaciones_historico = consignaciones.consignments_in_time_range(ini_date, end_date)
+        comp_root_db = ComponenteRoot.objects(public_id=self.root_id).first()
+        if comp_root_db is None:
+            return None
+
+        success,comp_leaf_db=comp_root_db.search_leaf_by_id(self.leaf_id)
+        if comp_leaf_db is None:
+            return None
+        consignaciones = comp_leaf_db.consignments
+        if consignaciones is not None:
+            #Consultar consignaciones en el periodo
+            consignaciones_historico = consignaciones.consignments_in_time_range(ini_date, end_date)
+        else:
+            consignaciones_historico=[]
         #SI TIENE CONSIGNACIONES EXCLUIR PERIODOS CONSIGNADOS (FUNCION TIME_RANGES)
         time_ranges=generate_time_ranges(consignaciones_historico,ini_date,end_date)
-
         #CALCULO DE INDISPONIBILIDAD Y GUARDAR EN REPORTE
         indisponible_minutos = 0  # indisponibilidad acumulada
+        periodo_indisponibilidad=[]
         for time_range in time_ranges:
-            value=valid_source.get_value(time_range)
-            # acumulando el tiempo de indisponibilidad
-            indisponible_minutos += value[tag_name].iloc[0]
+            success,value,msg=valid_source.get_value(time_range)
+            if success:# acumulando el tiempo de indisponibilidad
+                indisponible_minutos += value
+                if value>0:
+                    periodo_indisponibilidad.append(time_range.ToString())
+            else:
+                continue
         disponible_minutos=cal_disp(indisponible_minutos,ini_date,end_date)
-        historic_report.periodo_indisponibilidad=time_ranges
+        historic_report.periodo_indisponibilidad=periodo_indisponibilidad
         historic_report.consignaciones_detalle = consignaciones_historico
         historic_report.indisponibilidad_minutos=indisponible_minutos
         historic_report.disponibilidad_minutos = disponible_minutos
@@ -172,6 +190,15 @@ def generate_time_ranges(consignaciones: list, ini_date: dt.datetime, end_date: 
         start = ini_date  # fecha desde la que se empieza un periodo válido para calc. disponi
         end = consignaciones[0].fecha_inicio  # fecha fin del periodo válido para calc. disponi
         return [pi._time_range(start, end)]
+
+    elif consignaciones[0].fecha_inicio == ini_date and consignaciones[0].fecha_final < end_date:
+        # --*++++[++++++]+++++++++*---------------
+        start = ini_date  # fecha desde la que se empieza un periodo válido para calc. disponi
+        end = consignaciones[0].fecha_final    # fecha fin del periodo válido para calc. disponi
+        tail = consignaciones[0].fecha_final  # siguiente probable periodo (lo que queda restante a analizar)
+        time_ranges = [pi._time_range(start, end)]  # primer periodo válido
+
+
     elif consignaciones[0].fecha_inicio == ini_date and consignaciones[0].fecha_final == end_date:
         # ---*[+++++++]*---
         # este caso es definitivo y no requiere continuar más alla
@@ -203,7 +230,7 @@ def cal_indisp(disp_min,fecha_inicio,fecha_final):
 def cal_disp(indisp_min,fecha_inicio,fecha_final):
     fecha_inicio = check_date(fecha_inicio)
     fecha_final = check_date(fecha_final)
-    t_delta = fecha_final - fecha_inicio
+    t_delta = fecha_final[1] - fecha_inicio[1]
     periodo_evaluacion_minutos = t_delta.days * (60 * 24) + t_delta.seconds // 60 + t_delta.seconds % 60
     dis_min=periodo_evaluacion_minutos-indisp_min
     return dis_min

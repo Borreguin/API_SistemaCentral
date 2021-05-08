@@ -29,7 +29,7 @@ class ReportSource(Document):
     observaciones = DictField(required=False, default=dict())
     disponibilidad_minutos = FloatField(default=0)
     indisponibilidad_minutos = FloatField(default=0)
-    meta = {"collection": "Report|Fuentes"}
+    meta = {"collection": "REPORT|Fuentes"}
 
     def __init__(self, *args, **values):
         super().__init__(*args, **values)

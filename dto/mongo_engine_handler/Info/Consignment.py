@@ -14,7 +14,7 @@ Consignación:
 import hashlib
 import traceback
 import uuid
-
+from my_lib.utils import check_date
 from mongoengine import *
 import datetime as dt
 import os
@@ -148,6 +148,9 @@ class Consignments(Document):
         return True, f"Consignación [{id_consignacion}] ha sido eliminada"
 
     def consignments_in_time_range(self, ini_date: dt.datetime, end_time: dt.datetime):
+        success,ini_date=check_date(ini_date)
+        success,end_time = check_date(end_time)
+
         return [c for c in self.consignaciones if
                 (ini_date <= c.fecha_inicio < end_time or ini_date < c.fecha_final <= end_time) or
                 # el periodo consignado cubre la totalidad del periodo a evaluar:
